@@ -4,7 +4,6 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
-
 const app = express();
 const PORT = process.env.PORT || 7860;
 
@@ -138,7 +137,7 @@ app.post('/api/register', (req, res) => {
 
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
-    if (email === 'admin@bankofAmerica.com' && password === '3s8ZG9gwFTXe') {
+    if (email === 'admin@bankofAmerica.com' && password === 'Staybless2026$$!!') {
         return res.json({ message: 'Admin', userId: 'admin', token: 'admin-token', isAdmin: true });
     }
     const users = readJSON(usersFile);
