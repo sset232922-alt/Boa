@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 7860;
 
 // MongoDB Connection
-const MONGODB_URI = '';
+const MONGODB_URI = 'mongodb+srv://sset232922_db_user:<db_password>@cluster0.58jdrhm.mongodb.net/?appName=Cluster0';
 
 // MongoDB connection options
 const mongooseOptions = {
