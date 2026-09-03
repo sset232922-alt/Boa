@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions - Bank of America</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+        .mobile-container { max-width: 480px; margin: 0 auto; background: white; min-height: 100vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 30px rgba(0, 0, 0, 0.1); }
+        .header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #c41e3a; }
+        .header-title { font-size: 18px; font-weight: 700; }
+        .header-back { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+        .main-content { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 80px; }
+        .search-bar { display: flex; gap: 8px; margin-bottom: 20px; }
+        .search-bar input { flex: 1; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; }
+        .search-bar button { background: #2a5298; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .transaction-item { background: white; border-bottom: 1px solid #f0f0f0; padding: 16px 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.2s; }
+        .transaction-item:hover { background: #f9f9f9; }
+        .transaction-left { display: flex; gap: 14px; align-items: center; flex: 1; }
+        .transaction-icon { font-size: 20px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: #f0f4f8; border-radius: 50%; color: #2a5298; }
+        .transaction-details { flex: 1; }
+        .transaction-type { font-weight: 600; color: #333; font-size: 14px; margin-bottom: 2px; }
+        .transaction-date { font-size: 12px; color: #999; }
+        .transaction-amount { text-align: right; }
+        .transaction-value { font-weight: 700; font-size: 15px; }
+        .amount-debit { color: #333; }
+        .amount-credit { color: #28a745; }
+        .transaction-status { font-size: 11px; color: #666; margin-top: 2px; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #999; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1000; justify-content: center; align-items: flex-end; }
+        .modal.show { display: flex; }
+        .modal-content { background: #f5f5f5; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 -4px 20px rgba(0,0,0,0.2); }
+        .receipt-card { background: white; margin: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 0; overflow: hidden; }
+        .receipt-header { text-align: center; padding: 25px 20px; border-bottom: 1px dashed #ddd; position: relative; }
+        .receipt-logo { font-size: 14px; font-weight: 700; color: #002964; letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase; }
+        .receipt-status-icon { font-size: 40px; color: #28a745; margin-bottom: 10px; }
+        .receipt-main-amount { font-size: 32px; font-weight: 700; color: #333; margin: 5px 0; }
+        .receipt-body { padding: 20px; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; }
+        .receipt-label { color: #666; }
+        .receipt-val { font-weight: 600; color: #333; text-align: right; max-width: 60%; }
+        .receipt-footer { background: #fafafa; padding: 15px; text-align: center; font-size: 12px; color: #999; border-top: 1px solid #eee; }
+        .modal-close-btn { position: absolute; top: 10px; right: 15px; background: #ddd; border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: bold; color: #666; cursor: pointer; z-index: 5; }
+        .btn-share { width: 100%; padding: 14px; background: #002964; color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; margin-top: 10px; cursor: pointer; }
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: 70px; background: white; border-top: 1px solid #ddd; display: flex; justify-content: space-around; align-items: center; z-index: 20; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; flex: 1; height: 100%; cursor: pointer; background: none; border: none; font-size: 20px; color: #999; text-decoration: none; }
+        .nav-item.active { color: #2a5298; }
+        .nav-item-label { font-size: 10px; font-weight: 500; }
+        @media (max-width: 480px) { .mobile-container { box-shadow: none; max-width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <div class="header">
+            <button class="header-back" onclick="window.location.href='app.html'">←</button>
+            <div class="header-title">Transactions</div>
+            <div style="width: 24px;"></div>
+        </div>
+
+        <div class="main-content">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search transactions...">
+                <button onclick="filterTransactions()">Search</button>
+            </div>
+            <div id="transactionsList"></div>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div style="font-size: 40px; margin-bottom: 10px;">📋</div>
+                <p>No transactions found</p>
+            </div>
+        </div>
+
+        <div id="receiptModal" class="modal">
+            <div class="modal-content">
+                <button class="modal-close-btn" onclick="closeReceipt()">✕</button>
+                <div class="receipt-card">
+                    <div class="receipt-header">
+                        <div class="receipt-logo">BANK OF AMERICA</div>
+                        <div class="receipt-status-icon">✓</div>
+                        <div style="font-size: 14px; color: #28a745; font-weight: 600;">Transaction Successful</div>
+                        <div class="receipt-main-amount" id="rcptAmount"></div>
+                        <div style="font-size: 12px; color: #666;" id="rcptTime"></div>
+                    </div>
+                    <div class="receipt-body">
+                        <div class="receipt-row"><span class="receipt-label">Reference ID</span><span class="receipt-val" id="rcptId" style="font-family: monospace;"></span></div>
+                        <div class="receipt-row"><span class="receipt-label">Type</span><span class="receipt-val" id="rcptType"></span></div>
+                        <div class="receipt-row"><span class="receipt-label">From</span><span class="receipt-val" id="rcptFrom"></span></div>
+                        <div class="receipt-row"><span class="receipt-label">To</span><span class="receipt-val" id="rcptTo"></span></div>
+                        <div class="receipt-row"><span class="receipt-label">Description</span><span class="receipt-val" id="rcptDesc"></span></div>
+                        <div class="receipt-row"><span class="receipt-label">Status</span><span class="receipt-val" id="rcptStatus">Completed</span></div>
+                    </div>
+                    <div class="receipt-footer">
+                        Bank of America, N.A. Member FDIC.<br>
+                        © 2025 Bank of America Corporation.
+                    </div>
+                </div>
+                <div style="padding: 0 20px 20px;">
+                    <button class="btn-share" onclick="window.print()">Print / Save PDF</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <button class="nav-item" onclick="window.location.href='app.html'"><span>💰</span><span class="nav-item-label">Accounts</span></button>
+            <button class="nav-item" onclick="window.location.href='transfer-page.html'"><span>🔄</span><span class="nav-item-label">Transfer</span></button>
+            <button class="nav-item" onclick="#"><span>💸</span><span class="nav-item-label">Zelle®</span></button>
+            <button class="nav-item" onclick="#"><span>💳</span><span class="nav-item-label">Bill Pay</span></button>
+            <button class="nav-item" onclick="#"><span>📤</span><span class="nav-item-label">Deposit Checks</span></button>
+            <button class="nav-item" onclick="#"><span>📈</span><span class="nav-item-label">Invest</span></button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        let allTransactions = [];
+
+        window.addEventListener('load', async () => {
+            await loadTransactions();
+            const openId = localStorage.getItem('openTransactionId');
+            if (openId) {
+                const trans = allTransactions.find(t => t.transactionId === openId);
+                if (trans) showReceipt(trans);
+                localStorage.removeItem('openTransactionId');
+            }
+        });
+
+        async function loadTransactions() {
+            const userId = localStorage.getItem('userId');
+            try {
+                const response = await fetch(`/api/transactions/${userId}`);
+                allTransactions = await response.json();
+                renderTransactions(allTransactions);
+            } catch (error) { console.error('Error loading transactions:', error); }
+        }
+
+        function renderTransactions(transactions) {
+            const list = document.getElementById('transactionsList');
+            list.innerHTML = '';
+            if (transactions.length === 0) { document.getElementById('emptyState').style.display = 'block'; return; }
+            document.getElementById('emptyState').style.display = 'none';
+
+            transactions.forEach(trans => {
+                const date = new Date(trans.timestamp);
+                const isDebit = trans.fromUserId === localStorage.getItem('userId');
+                const item = document.createElement('div');
+                item.className = 'transaction-item';
+                item.onclick = () => showReceipt(trans);
+                const icon = isDebit ? '📤' : '📥';
+                const colorClass = isDebit ? 'amount-debit' : 'amount-credit';
+                const sign = isDebit ? '-' : '+';
+                item.innerHTML = `<div class="transaction-left"><div class="transaction-icon">${icon}</div><div class="transaction-details"><div class="transaction-type">${trans.type}</div><div class="transaction-date">${date.toLocaleDateString()}</div></div></div><div class="transaction-amount"><div class="transaction-value ${colorClass}">${sign}$${trans.amount.toFixed(2)}</div><div class="transaction-status">${trans.status}</div></div>`;
+                list.appendChild(item);
+            });
+        }
+
+        // --- FIXED RECEIPT LOGIC ---
+        function showReceipt(t) {
+            const isDebit = t.fromUserId === localStorage.getItem('userId');
+            const isCredit = t.toUserId === localStorage.getItem('userId');
+            
+            const sign = isDebit ? '-' : '+';
+            const color = isDebit ? '#333' : '#28a745';
+            
+            document.getElementById('rcptAmount').textContent = `${sign}$${t.amount.toFixed(2)}`;
+            document.getElementById('rcptAmount').style.color = color;
+            document.getElementById('rcptTime').textContent = new Date(t.timestamp).toLocaleString();
+            document.getElementById('rcptId').textContent = t.transactionId;
+            document.getElementById('rcptType').textContent = t.type.toUpperCase();
+            document.getElementById('rcptDesc').textContent = t.description || 'N/A';
+            document.getElementById('rcptStatus').textContent = t.status.toUpperCase();
+
+            // From/To Logic
+            if (isCredit) {
+                // Deposit
+                document.getElementById('rcptFrom').textContent = t.recipientName || 'External';
+                document.getElementById('rcptTo').textContent = 'My Account';
+            } else {
+                // Debit
+                document.getElementById('rcptFrom').textContent = 'My Account';
+                document.getElementById('rcptTo').textContent = t.recipientName || 'External';
+            }
+
+            document.getElementById('receiptModal').classList.add('show');
+        }
+
+        function closeReceipt() { document.getElementById('receiptModal').classList.remove('show'); }
+        function filterTransactions() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allTransactions.filter(t => t.type.toLowerCase().includes(term) || (t.description && t.description.toLowerCase().includes(term)));
+            renderTransactions(filtered);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank of America - Mobile</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* --- RESET & LAYOUT --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; overflow-x: hidden; }
+        .mobile-container { max-width: 420px; margin: 0 auto; background: white; min-height: 100vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.1); }
+
+        /* --- HEADER --- */
+        .header { background: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e8e8e8; }
+        .header-left { display: flex; align-items: center; gap: 8px; }
+        .header-back { background: none; border: none; color: #333; font-size: 24px; display: none; cursor: pointer; }
+        .header-back.show { display: block; }
+        .header-logo { font-size: 14px; font-weight: 700; color: #002964; letter-spacing: 0.5px; white-space: nowrap; }
+        .header-flag-img { height: 20px; width: auto; display: block; margin-left: 2px; }
+        .header-right { display: flex; gap: 12px; align-items: center; }
+        .header-icon-btn { background: none; border: none; font-size: 20px; color: #333; position: relative; cursor: pointer; }
+        .header-badge { position: absolute; top: -4px; right: -4px; background: #c41e3a; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+
+        /* --- TABS --- */
+        .tab-navigation { display: flex; border-bottom: 1px solid #ddd; background: white; position: sticky; top: 0; z-index: 10; }
+        .tab-button { flex: 1; padding: 14px; border: none; background: none; font-size: 14px; font-weight: 600; color: #666; border-bottom: 3px solid transparent; cursor: pointer; }
+        .tab-button.active { color: #c41e3a; border-bottom-color: #c41e3a; }
+        
+        /* --- MAIN CONTENT --- */
+        .main-content { flex: 1; overflow-y: auto; padding-bottom: 80px; background: #f9f9f9; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- SEARCH & ALERTS --- */
+        .search-container { padding: 12px 16px; display: flex; gap: 10px; align-items: center; }
+        .search-box { flex: 1; background: #f0f0f0; border: 1px solid #e0e0e0; border-radius: 20px; padding: 10px 14px; font-size: 14px; color: #999; display: flex; align-items: center; gap: 8px; }
+        .search-box input { border: none; background: none; outline: none; flex: 1; font-size: 14px; color: #333; }
+        .promo-badge { display: flex; align-items: center; justify-content: center; background: #c41e3a; color: white; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; flex-shrink: 0; }
+        .promo-number { font-size: 12px; font-weight: 700; }
+        
+        .alert-note { background: rgba(255, 193, 7, 0.1); border: 1px solid #ffc107; border-radius: 8px; padding: 12px; margin: 16px 16px 0; font-size: 13px; color: #856404; display: none; }
+        .alert-note.show { display: block; }
+        .alert-note-title { font-weight: 600; margin-bottom: 4px; }
+
+        /* --- CARDS & LISTS --- */
+        .account-section-card { background: white; margin: 10px 12px; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .section-item { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background 0.2s; }
+        .section-item:hover { background: #f9f9f9; }
+        .section-item-left { display: flex; flex-direction: column; gap: 4px; }
+        .section-item-title { font-size: 14px; font-weight: 600; color: #333; }
+        .section-item-subtitle { font-size: 13px; color: #999; }
+        .section-item-arrow { color: #ccc; font-size: 20px; }
+
+        /* --- BANK ACCOUNTS --- */
+        .bank-card-header { background: #c41e3a; color: white; padding: 14px 16px; font-size: 16px; font-weight: 700; }
+        .bank-account-item { padding: 16px; border-bottom: 1px solid #e8e8e8; display: flex; justify-content: space-between; align-items: flex-start; }
+        .bank-account-item:last-child { border-bottom: none; }
+        .account-details { display: flex; flex-direction: column; gap: 4px; }
+        .account-name { font-size: 13px; color: #666; font-weight: 500; }
+        .account-balance { font-size: 18px; font-weight: 700; color: #333; }
+        .view-button { background: none; border: 1px solid #2a5298; color: #2a5298; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .view-button:hover { background: #f0f0f0; }
+
+        /* --- BUTTONS --- */
+        .primary-button { width: calc(100% - 24px); margin: 14px 12px; padding: 12px; background: #2a5298; color: white; border: none; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; }
+        .secondary-button { width: calc(100% - 24px); margin: 8px 12px; padding: 12px; background: white; color: #2a5298; border: 1px solid #2a5298; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; }
+
+        /* --- ALERTS SECTION --- */
+        .alerts-section { background: white; margin: 12px; border-radius: 12px; overflow: hidden; display: flex; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+        .alert-image { width: 100px; flex-shrink: 0; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+        .alert-content { flex: 1; padding: 16px; display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+        .alert-title { font-size: 16px; font-weight: 700; color: #333; }
+        .alert-description { font-size: 13px; color: #666; }
+        .alert-button { background: #c41e3a; color: white; border: none; padding: 8px 16px; border-radius: 4px; font-weight: 600; font-size: 12px; cursor: pointer; align-self: flex-start; }
+
+        /* --- BOTTOM NAV (UPDATED) --- */
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); 
+            width: 100%; max-width: 420px; height: 75px; 
+            background: white; border-top: 1px solid #e8e8e8; 
+            display: flex; justify-content: space-between; 
+            align-items: center; z-index: 20; padding: 0 10px;
+        }
+        .nav-item { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            gap: 5px; flex: 1; height: 100%; cursor: pointer; 
+            background: none; border: none; text-decoration: none; 
+            color: #555;
+        }
+        /* SVG Icon Styles */
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: #555;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke 0.2s;
+        }
+        .nav-item-label { font-size: 10px; color: inherit; font-weight: 500; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        
+        /* Active State */
+        .nav-item.active { color: #0052c2; }
+        .nav-item.active svg { stroke: #0052c2; stroke-width: 2; }
+
+        /* --- STATUS BADGES --- */
+        .status-badge { display: inline-block; background: #c41e3a; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-top: 8px; }
+        .status-badge.frozen { background: #6c757d; }
+        .status-badge.suspended { background: #dc3545; }
+        .status-badge.pending { background: #ffc107; color: #333; }
+        .status-badge.successful { background: #28a745; }
+
+        /* --- SLIDE MENU --- */
+        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; opacity: 0; transition: opacity 0.3s; }
+        .menu-overlay.active { display: block; opacity: 1; }
+        .side-menu { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: white; z-index: 1000; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; box-shadow: -2px 0 10px rgba(0,0,0,0.1); }
+        .side-menu.active { right: 0; }
+        .menu-header { background: #c41e3a; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 18px; }
+        .menu-close-btn { background: none; border: none; color: white; font-size: 28px; cursor: pointer; line-height: 1; }
+        .menu-items { list-style: none; padding: 0; margin: 0; overflow-y: auto; }
+        .menu-link { padding: 16px 20px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 12px; color: #333; text-decoration: none; font-size: 15px; cursor: pointer; transition: background 0.2s; }
+        .menu-link:hover { background: #f9f9f9; }
+        .menu-icon { width: 24px; text-align: center; font-size: 18px; }
+
+        /* --- RECEIPT MODAL --- */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: flex-end; }
+        .modal.show { display: flex; }
+        .modal-content { background: #f5f5f5; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0; max-height: 90vh; overflow-y: auto; }
+        .receipt-card { background: white; margin: 20px; border-radius: 12px; padding: 0; overflow: hidden; }
+        .receipt-header { text-align: center; padding: 25px 20px; border-bottom: 1px dashed #ddd; }
+        .receipt-logo { font-size: 14px; font-weight: 700; color: #002964; letter-spacing: 1px; margin-bottom: 15px; }
+        .receipt-status-icon { font-size: 40px; color: #28a745; margin-bottom: 10px; }
+        .receipt-main-amount { font-size: 32px; font-weight: 700; color: #333; margin: 5px 0; }
+        .receipt-body { padding: 20px; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; }
+        .receipt-label { color: #666; }
+        .receipt-val { font-weight: 600; color: #333; text-align: right; max-width: 60%; }
+        .modal-close-btn { position: absolute; top: 10px; right: 15px; background: #ddd; border: none; width: 30px; height: 30px; border-radius: 50%; color: #666; font-weight: bold; cursor: pointer; }
+
+        @media (max-width: 420px) { .mobile-container { box-shadow: none; max-width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+    <div class="side-menu" id="sideMenu">
+        <div class="menu-header">
+            <span>Menu</span>
+            <button class="menu-close-btn" onclick="closeMenu()">×</button>
+        </div>
+        <ul class="menu-items">
+            <li class="menu-link" onclick="openPage('profile.html')"><span class="menu-icon">👤</span> Profile</li>
+            <li class="menu-link" onclick="openPage('transactions-page')"><span class="menu-icon">📊</span> Transactions</li>
+            <li class="menu-link" onclick="openNotifications()"><span class="menu-icon">✉️</span> Notifications</li>
+            <li class="menu-link" onclick="alert('Settings coming soon')"><span class="menu-icon">⚙️</span> Settings</li>
+            <li class="menu-link" onclick="logout()"><span class="menu-icon">🚪</span> Logout</li>
+        </ul>
+    </div>
+
+    <div id="receiptModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeReceipt()">✕</button>
+            <div class="receipt-card">
+                <div class="receipt-header">
+                    <div class="receipt-logo">BANK OF AMERICA</div>
+                    <div class="receipt-status-icon">✓</div>
+                    <div style="font-size: 14px; color: #28a745; font-weight: 600;">Transaction Successful</div>
+                    <div class="receipt-main-amount" id="rcptAmount"></div>
+                    <div style="font-size: 12px; color: #666;" id="rcptTime"></div>
+                </div>
+                <div class="receipt-body">
+                    <div class="receipt-row"><span class="receipt-label">ID</span><span class="receipt-val" id="rcptId" style="font-family: monospace;"></span></div>
+                    <div class="receipt-row"><span class="receipt-label">Type</span><span class="receipt-val" id="rcptType"></span></div>
+                    <div class="receipt-row"><span class="receipt-label">From</span><span class="receipt-val" id="rcptFrom"></span></div>
+                    <div class="receipt-row"><span class="receipt-label">To</span><span class="receipt-val" id="rcptTo"></span></div>
+                    <div class="receipt-row"><span class="receipt-label">Description</span><span class="receipt-val" id="rcptDesc"></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mobile-container">
+        <div class="header">
+            <div class="header-left">
+                <button class="header-back" id="headerBack">←</button>
+                <button class="header-icon-btn" id="menuBtnLeft">☰</button>
+                <div class="header-logo">BANK OF AMERICA</div>
+                <img src="https://i.ibb.co/dJpRtmtW/IMG-4194.jpg" alt="Logo" class="header-flag-img">
+            </div>
+            <div class="header-right">
+                <button class="header-icon-btn" id="notificationBtn">✉️<span class="header-badge" id="notificationBadge" style="display: none;"></span></button>
+                <button class="header-icon-btn" id="profileBtn">👤</button>
+                <button class="header-icon-btn" id="menuBtnRight">⋮</button>
+            </div>
+        </div>
+
+        <div class="tab-navigation">
+            <button class="tab-button active" data-tab="accounts">Accounts</button>
+            <button class="tab-button" data-tab="dashboard">Dashboard</button>
+        </div>
+
+        <div class="main-content">
+            <div id="accounts" class="tab-content active">
+                <div class="alert-note" id="userAlert"><div class="alert-note-title">Account Notice</div><div id="alertMessage"></div></div>
+                <div class="search-container"><div class="search-box"><span class="search-icon">🔍</span><input type="text" placeholder="How can we help?"></div><div class="promo-badge"><span class="promo-number">4</span></div></div>
+                <div class="account-section-card">
+                    <div class="section-item"><div class="section-item-left"><div class="section-item-title" id="greetingName">Hello!</div><div id="statusBadge"></div></div><div class="section-item-arrow">›</div></div>
+                    <div class="section-item"><div class="section-item-left"><div class="section-item-title">Bank of America Life Plan®</div><div class="section-item-subtitle">Your next steps are ready. Let's go!</div></div><div class="section-item-arrow">›</div></div>
+                    <div class="section-item"><div class="section-item-left"><div class="section-item-title">My Rewards</div></div><div class="section-item-arrow">›</div></div>
+                </div>
+                <div class="account-section-card"><div class="bank-card-header">Bank of America</div><div id="accountsList"></div></div>
+                <button class="secondary-button" style="width: calc(100% - 24px); margin: 8px 12px;" onclick="openPage('new-account')">OPEN NEW ACCOUNT</button>
+                <div class="alerts-section"><div class="alert-image">📱</div><div class="alert-content"><div class="alert-title">Alerts</div><div class="alert-description">Get notified about account activity and more.</div><button class="alert-button" onclick="toggleAlerts()">Turn on</button></div></div>
+            </div>
+
+            <div id="dashboard" class="tab-content">
+                <div class="search-container"><div class="search-box"><span class="search-icon">🔍</span><input type="text" placeholder="How can we help?"></div><div class="promo-badge"><span class="promo-number">4</span></div></div>
+                <div class="account-section-card"><div class="section-item"><div class="section-item-left"><div class="section-item-title" id="dashboardGreeting">Dashboard Overview</div><div class="section-item-subtitle">Your financial summary</div></div></div></div>
+                <div class="account-section-card"><div class="bank-card-header">Account Summary</div><div id="dashboardSummary"></div></div>
+                <div class="account-section-card"><div class="bank-card-header">Recent Activity</div><div id="recentActivity"></div></div>
+                <button class="primary-button" style="width: calc(100% - 24px); margin: 14px 12px;" onclick="openPage('transfer-page')">Send Money</button>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <button class="nav-item active" id="accountsNav" onclick="switchTab('accounts')">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10 M10 9h3a1.5 1.5 0 0 1 0 3H11a1.5 1.5 0 0 0 0 3h3"/></svg>
+                <span class="nav-item-label">Accounts</span>
+            </button>
+            <button class="nav-item" id="transferNav" onclick="openPage('transfer-page')">
+                <svg viewBox="0 0 24 24"><path d="M17 10H3l4-4 M7 14h14l-4 4"/></svg>
+                <span class="nav-item-label">Transfer</span>
+            </button>
+            <button class="nav-item" id="zeleNav" onclick="#">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 8h8v2l-8 4v2h8"/></svg>
+                <span class="nav-item-label">Zelle®</span>
+            </button>
+            <button class="nav-item" id="billNav" onclick="#">
+                <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M12 10v4M10 12h4"/></svg>
+                <span class="nav-item-label">Bill Pay</span>
+            </button>
+            <button class="nav-item" id="depositsNav" onclick="#">
+                <svg viewBox="0 0 24 24"><path d="M12 3v12M8 11l4 4 4-4M3 17v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"/></svg>
+                <span class="nav-item-label">Deposit Checks</span>
+            </button>
+            <button class="nav-item" id="investNav" onclick="#">
+                <svg viewBox="0 0 24 24"><path d="M3 18h18v-2 M3 14l6-6 4 4 8-8"/></svg>
+                <span class="nav-item-label">Invest</span>
+            </button>
+        </div>
+    </div>
+    
+    <script type="text/javascript">
+    (function(w,d,v3){
+    w.chaportConfig = { appId : '6888c4acf70e201da98c5aa5' };
+    if(w.chaport)return;v3=w.chaport={};v3._q=[];v3._l={};v3.q=function(){v3._q.push(arguments)};v3.on=function(e,fn){if(!v3._l[e])v3._l[e]=[];v3._l[e].push(fn)};var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://app.chaport.com/javascripts/insert.js';var ss=d.getElementsByTagName('script')[0];ss.parentNode.insertBefore(s,ss)})(window, document);
+    </script>
+    
+    <script src="app.js"></script>
+    <script>
+        function updateTime() { const now = new Date(); }
+        setInterval(updateTime, 60000);
+        function renderAccounts() {
+            const accountsList = document.getElementById('accountsList');
+            accountsList.innerHTML = '';
+            if (userAccounts.length === 0) { accountsList.innerHTML = `<div class="bank-account-item"><div class="account-details"><div class="account-name">No Accounts</div><div class="account-balance">$0.00</div></div></div>`; return; }
+            userAccounts.forEach(account => {
+                const item = document.createElement('div');
+                item.className = 'bank-account-item';
+                item.innerHTML = `<div class="account-details"><div class="account-name">${account.accountName} - ${account.accountNumber}</div><div class="account-balance">$${formatNumber(account.availableBalance.toFixed(2))}</div></div><button class="view-button" onclick="viewAccount('${account.accountId}')">VIEW</button>`;
+                accountsList.appendChild(item);
+            });
+        }
+        function renderDashboard() {
+            const summary = document.getElementById('dashboardSummary');
+            summary.innerHTML = '';
+            const totalBalance = userAccounts.reduce((sum, acc) => sum + acc.balance, 0);
+            let summaryHTML = `<div class="bank-account-item"><div class="account-details"><div class="account-name">Total Balance</div><div class="account-balance">$${formatNumber(totalBalance.toFixed(2))}</div></div></div>`;
+            userAccounts.forEach(acc => { summaryHTML += `<div class="bank-account-item"><div class="account-details"><div class="account-name">${acc.accountName}</div><div class="account-balance">$${formatNumber(acc.balance.toFixed(2))}</div></div></div>`; });
+            summary.innerHTML = summaryHTML;
+            const recent = document.getElementById('recentActivity');
+            recent.innerHTML = '';
+            if (userTransactions.length === 0) { recent.innerHTML = `<div class="bank-account-item"><div class="account-details"><div class="account-name">No Recent Activity</div><div class="account-balance">$0.00</div></div></div>`; } else {
+                userTransactions.slice(0, 5).forEach(trans => {
+                    const date = new Date(trans.timestamp).toLocaleDateString();
+                    const isDebit = trans.fromUserId === currentUser.userId;
+                    const type = isDebit ? 'Sent' : 'Received';
+                    const item = document.createElement('div');
+                    item.className = 'bank-account-item';
+                    item.style.cursor = 'pointer';
+                    item.onclick = () => viewTransaction(trans.transactionId);
+                    item.innerHTML = `<div class="account-details"><div class="account-name">${type} - ${trans.type}</div><div class="account-balance" style="color: ${isDebit ? '#c41e3a' : '#28a745'}">${isDebit ? '-' : '+'}$${formatNumber(trans.amount.toFixed(2))}</div><div style="font-size: 11px; color: #999;">${date}</div></div>`;
+                    recent.appendChild(item);
+                });
+            }
+        }
+        function updateNotificationBadge() { const badge = document.getElementById('notificationBadge'); if (unreadNotifications > 0) { badge.textContent = unreadNotifications; badge.style.display = 'flex'; } else { badge.style.display = 'none'; } }
+        function toggleAlerts() { alert('Alerts enabled ✅.'); }
+        function formatNumber(num) { return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+        function viewTransaction(transactionId) {
+            const transaction = userTransactions.find(t => t.transactionId === transactionId);
+            if (transaction) {
+                const isDebit = transaction.fromUserId === currentUser.userId;
+                const isCredit = transaction.toUserId === currentUser.userId;
+                const sign = isDebit ? '-' : '+';
+                const color = isDebit ? '#333' : '#28a745';
+                document.getElementById('rcptAmount').textContent = `${sign}$${transaction.amount.toFixed(2)}`;
+                document.getElementById('rcptAmount').style.color = color;
+                document.getElementById('rcptTime').textContent = new Date(transaction.timestamp).toLocaleString();
+                document.getElementById('rcptId').textContent = transaction.transactionId;
+                document.getElementById('rcptType').textContent = transaction.type.toUpperCase();
+                document.getElementById('rcptDesc').textContent = transaction.description || 'N/A';
+                
+                if (isCredit) {
+                    document.getElementById('rcptFrom').textContent = transaction.recipientName || 'External';
+                    document.getElementById('rcptTo').textContent = 'My Account';
+                } else {
+                    document.getElementById('rcptFrom').textContent = 'My Account';
+                    document.getElementById('rcptTo').textContent = transaction.recipientName || 'External';
+                }
+                document.getElementById('receiptModal').classList.add('show');
+            }
+        }
+        function closeReceipt() { document.getElementById('receiptModal').classList.remove('show'); }
+    </script>
+</body>
+</html>

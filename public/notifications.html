@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Bank of America</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+        .mobile-container { max-width: 420px; margin: 0 auto; background: white; min-height: 100vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 30px rgba(0, 0, 0, 0.1); }
+        .header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #c41e3a; }
+        .header-title { font-size: 18px; font-weight: 700; }
+        .header-back { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+        .main-content { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 80px; }
+        .notification-item { background: white; border-bottom: 1px solid #eee; padding: 16px; display: flex; gap: 12px; cursor: pointer; transition: background 0.2s; }
+        .notification-item:hover { background: #f9f9f9; }
+        .notification-item.unread { background: #f0f8ff; border-left: 4px solid #c41e3a; }
+        .notif-icon { width: 40px; height: 40px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+        .notif-content { flex: 1; }
+        .notif-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .notif-title { font-weight: 700; font-size: 14px; color: #333; }
+        .notif-time { font-size: 11px; color: #999; }
+        .notif-message { font-size: 13px; color: #666; line-height: 1.4; }
+        .mark-all-btn { width: 100%; padding: 12px; background: white; border: 1px solid #ddd; border-radius: 8px; font-weight: 600; color: #2a5298; margin-bottom: 15px; cursor: pointer; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: flex-end; }
+        .modal.show { display: flex; }
+        .modal-content { background: #f5f5f5; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0; max-height: 90vh; overflow-y: auto; }
+        .receipt-card { background: white; margin: 20px; border-radius: 12px; padding: 0; overflow: hidden; }
+        .receipt-header { text-align: center; padding: 25px 20px; border-bottom: 1px dashed #ddd; }
+        .receipt-logo { font-size: 14px; font-weight: 700; color: #002964; letter-spacing: 1px; margin-bottom: 15px; }
+        .receipt-status-icon { font-size: 40px; color: #28a745; margin-bottom: 10px; }
+        .receipt-main-amount { font-size: 32px; font-weight: 700; color: #333; margin: 5px 0; }
+        .receipt-body { padding: 20px; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; }
+        .receipt-label { color: #666; }
+        .receipt-val { font-weight: 600; color: #333; text-align: right; max-width: 60%; }
+        .modal-close-btn { position: absolute; top: 10px; right: 15px; background: #ddd; border: none; width: 30px; height: 30px; border-radius: 50%; color: #666; font-weight: bold; cursor: pointer; }
+        .receipt-footer { background: #fafafa; padding: 15px; text-align: center; font-size: 12px; color: #999; border-top: 1px solid #eee; }
+        .btn-share { width: 100%; padding: 14px; background: #002964; color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; margin-top: 10px; cursor: pointer; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; height: 75px; background: white; border-top: 1px solid #e8e8e8; display: flex; justify-content: space-around; align-items: center; z-index: 20; padding: 0 10px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; flex: 1; height: 100%; cursor: pointer; background: none; border: none; text-decoration: none; color: #555; }
+        .nav-item svg { width: 24px; height: 24px; fill: none; stroke: #555; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.2s; }
+        .nav-item-label { font-size: 10px; color: inherit; font-weight: 500; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .nav-item.active { color: #0052c2; }
+        .nav-item.active svg { stroke: #0052c2; stroke-width: 2; }
+
+        @media (max-width: 480px) { .mobile-container { box-shadow: none; max-width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <div class="header">
+            <button class="header-back" onclick="window.location.href='app.html'">←</button>
+            <div class="header-title">Notifications</div>
+            <div style="width: 24px;"></div>
+        </div>
+
+        <div class="main-content">
+            <button class="mark-all-btn" onclick="markAllRead()">Mark All as Read</button>
+            <div id="notificationsList"></div>
+            <div id="emptyState" style="text-align: center; padding: 40px; color: #999; display: none;">
+                <div style="font-size: 40px; margin-bottom: 10px;">🔔</div>
+                No notifications
+            </div>
+        </div>
+
+        <div id="receiptModal" class="modal">
+            <div class="modal-content">
+                <button class="modal-close-btn" onclick="closeReceipt()">✕</button>
+                <div class="receipt-card">
+                    <div class="receipt-header">
+                        <div class="receipt-logo">BANK OF AMERICA</div>
+                        <div class="receipt-status-icon">✓</div>
+                        <div style="font-size: 14px; color: #28a745; font-weight: 600;">Transaction Successful</div>
+                        <div class="receipt-main-amount" id="rcptAmount"></div>
+                        <div style="font-size: 12px; color: #666;" id="rcptTime"></div>
+                    </div>
+                    <div class="receipt-body">
+                        <div class="receipt-row"><span class="receipt-label">Reference ID</span><span class="receipt-val" id="rcptId" style="font-family: monospace;"></span></div>
+                        <div class="receipt-row"><span class="receipt-label">Type</span><span class="receipt-val" id="rcptType"></span></div>
+                        <div class="receipt-row"><span class="receipt-label">From</span><span class="receipt-val" id="rcptFrom"></span></div>
+                        <div class="receipt-row"><span class="receipt-label">To</span><span class="receipt-val" id="rcptTo"></span></div>
+                        <div class="receipt-row"><span class="receipt-label">Description</span><span class="receipt-val" id="rcptDesc"></span></div>
+                        <div class="receipt-row"><span class="receipt-label">Status</span><span class="receipt-val" id="rcptStatus">Completed</span></div>
+                    </div>
+                    <div class="receipt-footer">Bank of America, N.A. Member FDIC.<br>© 2025 Bank of America Corporation.</div>
+                </div>
+                <div style="padding: 0 20px 20px;"><button class="btn-share" onclick="window.print()">Print / Save PDF</button></div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <button class="nav-item" onclick="window.location.href='app.html'">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10 M10 9h3a1.5 1.5 0 0 1 0 3H11a1.5 1.5 0 0 0 0 3h3"/></svg>
+                <span class="nav-item-label">Accounts</span>
+            </button>
+            <button class="nav-item" onclick="window.location.href='transfer-page.html'">
+                <svg viewBox="0 0 24 24"><path d="M17 10H3l4-4 M7 14h14l-4 4"/></svg>
+                <span class="nav-item-label">Transfer</span>
+            </button>
+            <button class="nav-item" onclick="#">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 8h8v2l-8 4v2h8"/></svg>
+                <span class="nav-item-label">Zelle®</span>
+            </button>
+            <button class="nav-item" onclick="#">
+                <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M12 10v4M10 12h4"/></svg>
+                <span class="nav-item-label">Bill Pay</span>
+            </button>
+            <button class="nav-item" onclick="#">
+                <svg viewBox="0 0 24 24"><path d="M12 3v12M8 11l4 4 4-4M3 17v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"/></svg>
+                <span class="nav-item-label">Deposit Checks</span>
+            </button>
+            <button class="nav-item" onclick="#">
+                <svg viewBox="0 0 24 24"><path d="M3 18h18v-2 M3 14l6-6 4 4 8-8"/></svg>
+                <span class="nav-item-label">Invest</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let notifications = [];
+        let userTransactions = [];
+        let currentUser = null;
+
+        window.addEventListener('load', async () => {
+            await loadData();
+            // Refresh loop
+            setInterval(loadData, 10000);
+        });
+
+        async function loadData() {
+            const userId = localStorage.getItem('userId');
+            const token = localStorage.getItem('authToken');
+            if(!userId || !token) return;
+
+            try {
+                // Fetch User
+                const uRes = await fetch(`/api/user/${userId}`, { headers: { 'Authorization': token } });
+                currentUser = await uRes.json();
+
+                // Fetch Transactions (for Receipt details)
+                const tRes = await fetch(`/api/transactions/${userId}`, { headers: { 'Authorization': token } });
+                if (tRes.ok) userTransactions = await tRes.json();
+
+                // Fetch Notifications
+                const nRes = await fetch(`/api/notifications/${userId}`, { headers: { 'Authorization': token } });
+                if (nRes.ok) {
+                    const newNotifs = await nRes.json();
+                    if(JSON.stringify(newNotifs) !== JSON.stringify(notifications)) {
+                        notifications = newNotifs;
+                        renderNotifications();
+                    }
+                }
+            } catch (error) { console.error('Error loading data:', error); }
+        }
+
+        function renderNotifications() {
+            const list = document.getElementById('notificationsList');
+            list.innerHTML = '';
+
+            if (notifications.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+            document.getElementById('emptyState').style.display = 'none';
+
+            // --- SORTING: Newest First (based on backdate) ---
+            notifications.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            notifications.forEach(notif => {
+                const item = document.createElement('div');
+                item.className = `notification-item ${notif.isRead ? '' : 'unread'}`;
+                
+                // Use the notification's own timestamp (which is now guaranteed correct)
+                const displayDate = new Date(notif.timestamp);
+                
+                let icon = '📢';
+                if(notif.title.includes('Deposit') || notif.type === 'credit') icon = '💰';
+                if(notif.title.includes('Transaction') || notif.type === 'debit') icon = '💳';
+                if(notif.title.includes('Security')) icon = '🛡️';
+
+                item.innerHTML = `
+                    <div class="notif-icon">${icon}</div>
+                    <div class="notif-content">
+                        <div class="notif-header">
+                            <span class="notif-title">${notif.title}</span>
+                            <span class="notif-time">${displayDate.toLocaleDateString()}</span>
+                        </div>
+                        <div class="notif-message">${notif.message}</div>
+                    </div>
+                `;
+
+                item.onclick = async () => {
+                    await markAsRead(notif.notificationId);
+                    if (notif.transactionId) {
+                        // Look for the transaction locally first
+                        let trans = userTransactions.find(t => t.transactionId === notif.transactionId);
+                        
+                        // If not found (rare sync timing), reload data then try again
+                        if(!trans) { 
+                            await loadData(); 
+                            trans = userTransactions.find(t => t.transactionId === notif.transactionId); 
+                        }
+                        
+                        if(trans) showReceipt(trans);
+                    }
+                };
+
+                list.appendChild(item);
+            });
+        }
+
+        function showReceipt(t) {
+            const isDebit = t.fromUserId === localStorage.getItem('userId');
+            const isCredit = t.toUserId === localStorage.getItem('userId');
+            
+            const sign = isDebit ? '-' : '+';
+            const color = isDebit ? '#333' : '#28a745';
+            
+            document.getElementById('rcptAmount').textContent = `${sign}$${t.amount.toFixed(2)}`;
+            document.getElementById('rcptAmount').style.color = color;
+            document.getElementById('rcptTime').textContent = new Date(t.timestamp).toLocaleString();
+            document.getElementById('rcptId').textContent = t.transactionId;
+            document.getElementById('rcptType').textContent = t.type.toUpperCase();
+            document.getElementById('rcptDesc').textContent = t.description || 'N/A';
+
+            if (isCredit) {
+                document.getElementById('rcptFrom').textContent = t.recipientName || 'External';
+                document.getElementById('rcptTo').textContent = 'My Account';
+            } else {
+                document.getElementById('rcptFrom').textContent = 'My Account';
+                document.getElementById('rcptTo').textContent = t.recipientName || 'External';
+            }
+
+            document.getElementById('receiptModal').classList.add('show');
+        }
+
+        function closeReceipt() { document.getElementById('receiptModal').classList.remove('show'); }
+
+        async function markAsRead(id) {
+            const token = localStorage.getItem('authToken');
+            await fetch(`/api/notifications/${id}/read`, { method: 'PUT', headers: { 'Authorization': token } });
+            const n = notifications.find(x => x.notificationId === id);
+            if(n) n.isRead = true;
+            renderNotifications();
+        }
+
+        async function markAllRead() {
+            const token = localStorage.getItem('authToken');
+            for (let n of notifications) {
+                if(!n.isRead) await fetch(`/api/notifications/${n.notificationId}/read`, { method: 'PUT', headers: { 'Authorization': token } });
+            }
+            loadData();
+        }
+    </script>
+</body>
+</html>

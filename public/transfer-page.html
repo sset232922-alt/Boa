@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer Money - Bank of America</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+        
+        .mobile-container { max-width: 420px; margin: 0 auto; background: white; min-height: 100vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 30px rgba(0, 0, 0, 0.1); }
+
+        /* Header */
+        .header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #c41e3a; }
+        .header-title { font-size: 18px; font-weight: 700; }
+        .header-back { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+
+        /* Content */
+        .main-content { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 90px; }
+
+        /* Steps */
+        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 24px; align-items: center; }
+        .step { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+        .step-number { width: 35px; height: 35px; border-radius: 50%; background: #ddd; color: #999; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+        .step.active .step-number { background: #c41e3a; color: white; }
+        .step.completed .step-number { background: #28a745; color: white; }
+        .step-label { font-size: 10px; color: #999; text-align: center; }
+        .step.active .step-label { color: #c41e3a; font-weight: 600; }
+
+        /* Forms */
+        .form-group { margin-bottom: 16px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; color: #333; font-size: 13px; }
+        select, input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; font-family: inherit; transition: border 0.3s; }
+        select:focus, input:focus, textarea:focus { outline: none; border-color: #2a5298; }
+
+        /* Payment Methods */
+        .payment-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+        .payment-method { padding: 12px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; text-align: center; transition: all 0.2s; background: white; }
+        .payment-method:hover { border-color: #2a5298; }
+        .payment-method.selected { border-color: #c41e3a; background: rgba(196, 30, 58, 0.05); }
+        .payment-icon { font-size: 24px; margin-bottom: 6px; }
+        .payment-name { font-weight: 600; font-size: 12px; color: #333; }
+
+        /* Buttons */
+        .btn-primary { width: 100%; padding: 14px; background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .btn-secondary { width: 100%; padding: 12px; background: white; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+
+        /* Sections */
+        .form-section { display: none; }
+        .form-section.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .section-divider { border-top: 1px solid #eee; margin: 15px 0; padding-top: 10px; font-size: 12px; font-weight: 700; color: #666; text-transform: uppercase; }
+
+        /* Modals Generic */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: white; width: 90%; max-width: 400px; border-radius: 12px; padding: 20px; text-align: center; }
+
+        /* --- ZELLE RECEIPT STYLES --- */
+        .zelle-modal-content { background: white; padding: 0; width: 100%; height: 100%; max-width: 100%; border-radius: 0; display: flex; flex-direction: column; }
+        .receipt-header { background: white; padding: 16px; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; justify-content: center; position: relative; }
+        .receipt-header-title { font-weight: 600; font-size: 16px; color: #333; }
+        .receipt-back-btn { position: absolute; left: 16px; background: none; border: none; font-size: 24px; color: #333; cursor: pointer; }
+        .receipt-body { padding: 24px 20px; background: white; flex: 1; overflow-y: auto; text-align: center; }
+        .receipt-avatar { position: relative; display: inline-block; margin-bottom: 20px; }
+        .receipt-avatar-circle { width: 80px; height: 80px; border-radius: 50%; background: #d0d0d0; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 700; color: white; margin: 0 auto; }
+        .receipt-badge { position: absolute; bottom: 0; right: 50%; transform: translateX(50%); width: 28px; height: 28px; background: #6d1ed4; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; }
+        .receipt-badge span { color: white; font-weight: 700; font-size: 16px; }
+        .receipt-amount { font-size: 36px; font-weight: 700; color: #333; margin-bottom: 8px; }
+        .receipt-to-label { font-size: 16px; color: #666; margin-bottom: 4px; }
+        .receipt-name { font-size: 22px; font-weight: 700; color: #333; margin-bottom: 4px; }
+        .receipt-phone { font-size: 16px; color: #666; margin-bottom: 6px; }
+        .receipt-enrolled { font-size: 14px; color: #999; margin-bottom: 24px; }
+        .receipt-warning { background: #f9f9f9; padding: 16px; border-radius: 8px; text-align: left; font-size: 13px; color: #666; margin-bottom: 20px; line-height: 1.5; }
+        .receipt-warning strong { color: #333; display: block; margin-top: 10px; }
+        .receipt-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: auto; }
+        .receipt-btn-cancel { padding: 14px; background: white; border: 2px solid #d0d0d0; border-radius: 24px; font-weight: 700; font-size: 16px; color: #333; cursor: pointer; }
+        .receipt-btn-send { padding: 14px; background: #012169; border: none; border-radius: 24px; font-weight: 700; font-size: 16px; color: white; cursor: pointer; }
+
+        /* --- STANDARD REVIEW RECEIPT STYLES --- */
+        .std-receipt-row { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; padding: 15px 0; font-size: 14px; text-align: left; }
+        .std-receipt-label { color: #666; font-weight: 500; }
+        .std-receipt-value { color: #333; font-weight: 700; text-align: right; max-width: 60%; }
+        .std-receipt-icon-circle { width: 60px; height: 60px; background: #e3f2fd; color: #1e3c72; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 15px; }
+
+        /* --- BOTTOM NAV (UPDATED) --- */
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); 
+            width: 100%; max-width: 420px; height: 75px; 
+            background: white; border-top: 1px solid #e8e8e8; 
+            display: flex; justify-content: space-between; 
+            align-items: center; z-index: 20; padding: 0 10px;
+        }
+        .nav-item { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            gap: 5px; flex: 1; height: 100%; cursor: pointer; 
+            background: none; border: none; text-decoration: none; 
+            color: #555;
+        }
+        /* SVG Icon Styles */
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: #555;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke 0.2s;
+        }
+        .nav-item-label { font-size: 10px; color: inherit; font-weight: 500; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        
+        /* Active State */
+        .nav-item.active { color: #0052c2; }
+        .nav-item.active svg { stroke: #0052c2; stroke-width: 2; }
+        
+        .restriction-icon { font-size: 40px; margin-bottom: 10px; }
+        .restriction-title { color: #c41e3a; font-weight: 700; font-size: 18px; margin-bottom: 8px; }
+        .restriction-text { color: #333; font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <div class="header">
+            <button class="header-back" onclick="window.location.href='app.html'">←</button>
+            <div class="header-title">Transfer</div>
+            <div style="width: 24px;"></div>
+        </div>
+
+        <div class="main-content">
+            <div class="step-indicator">
+                <div class="step active" id="step1"><div class="step-number">1</div><div class="step-label">Account</div></div>
+                <div class="step" id="step2"><div class="step-number">2</div><div class="step-label">Method</div></div>
+                <div class="step" id="step3"><div class="step-number">3</div><div class="step-label">Details</div></div>
+                <div class="step" id="step4"><div class="step-number">4</div><div class="step-label">Review</div></div>
+            </div>
+
+            <div class="form-section active" id="section1">
+                <div class="form-group">
+                    <label>From Account</label>
+                    <select id="fromAccount"><option value="">Loading accounts...</option></select>
+                </div>
+                <button class="btn-primary" onclick="nextStep(1)">Continue</button>
+            </div>
+
+            <div class="form-section" id="section2">
+                <label style="margin-bottom:15px;">Select Transfer Type</label>
+                <div class="payment-methods">
+                    <div class="payment-method" onclick="selectMethod(this, 'mybank')"><div class="payment-icon">🏦</div><div class="payment-name">My Bank</div></div>
+                    <div class="payment-method" onclick="selectMethod(this, 'otherbank')"><div class="payment-icon">🏛️</div><div class="payment-name">Other Bank</div></div>
+                    <div class="payment-method" onclick="selectMethod(this, 'zelle')"><div class="payment-icon">Ⓩ</div><div class="payment-name">Zelle</div></div>
+                    <div class="payment-method" onclick="selectMethod(this, 'wire')"><div class="payment-icon">📡</div><div class="payment-name">Wire Transfer</div></div>
+                </div>
+                <button class="btn-primary" onclick="nextStep(2)">Continue</button>
+                <button class="btn-secondary" onclick="prevStep(2)">Back</button>
+            </div>
+
+            <div class="form-section" id="section3">
+                <div id="fields-zelle" style="display:none;">
+                    <div class="form-group"><label>Recipient Name</label><input type="text" id="zelleName" placeholder="Full Name"></div>
+                    <div class="form-group"><label>Email or Phone</label><input type="text" id="zelleContact" placeholder="email@example.com or phone"></div>
+                    <div class="form-group"><label>Amount ($)</label><input type="number" id="zelleAmount" placeholder="0.00"></div>
+                </div>
+                <div id="fields-mybank" style="display:none;">
+                    <div class="form-group"><label>Name of Account</label><input type="text" id="mbName" placeholder="Recipient Name"></div>
+                    <div class="form-group"><label>Bank Name</label><input type="text" id="mbBank" value="Bank of America" readonly style="background:#eee;"></div>
+                    <div class="form-group"><label>Account Number</label><input type="text" id="mbAccount" placeholder="Account Number"></div>
+                    <div class="form-group"><label>Routing Number</label><input type="text" id="mbRouting" placeholder="Routing Number"></div>
+                    <div class="form-group"><label>Amount ($)</label><input type="number" id="mbAmount" placeholder="0.00"></div>
+                </div>
+                <div id="fields-otherbank" style="display:none;">
+                    <div class="form-group"><label>Name of Account</label><input type="text" id="obName" placeholder="Recipient Name"></div>
+                    <div class="form-group"><label>Bank Name</label><input type="text" id="obBank" placeholder="e.g. Chase, Wells Fargo"></div>
+                    <div class="form-group"><label>Account Number</label><input type="text" id="obAccount" placeholder="Account Number"></div>
+                    <div class="form-group"><label>Routing Number</label><input type="text" id="obRouting" placeholder="Routing Number"></div>
+                    <div class="form-group"><label>Amount ($)</label><input type="number" id="obAmount" placeholder="0.00"></div>
+                </div>
+                <div id="fields-wire" style="display:none;">
+                    <div class="section-divider">Beneficiary</div>
+                    <div class="form-group"><label>Name</label><input type="text" id="wireName"></div>
+                    <div class="form-group"><label>Address</label><input type="text" id="wireAddress"></div>
+                    <div class="section-divider">Bank</div>
+                    <div class="form-group"><label>Bank Name</label><input type="text" id="wireBankName"></div>
+                    <div class="form-group"><label>Bank Address</label><input type="text" id="wireBankAddress"></div>
+                    <div class="form-group"><label>Account/IBAN</label><input type="text" id="wireAccount"></div>
+                    <div class="form-group"><label>SWIFT/BIC</label><input type="text" id="wireSwift"></div>
+                    <div class="form-group"><label>Routing</label><input type="text" id="wireRouting"></div>
+                    <div class="section-divider">Transaction</div>
+                    <div class="form-group"><label>Amount ($)</label><input type="number" id="wireAmount" placeholder="0.00"></div>
+                </div>
+                <div class="form-group"><label>Description (Optional)</label><textarea id="transferNote" rows="2"></textarea></div>
+                <button class="btn-primary" onclick="nextStep(3)">Review</button>
+                <button class="btn-secondary" onclick="prevStep(3)">Back</button>
+            </div>
+
+            <div class="form-section" id="section4" style="display:none;"></div>
+        </div>
+
+        <div id="zelleReceiptModal" class="modal">
+            <div class="zelle-modal-content">
+                <div class="receipt-header">
+                    <button class="receipt-back-btn" onclick="closeZelleReceipt()">←</button>
+                    <span class="receipt-header-title">Review & Send</span>
+                </div>
+                <div class="receipt-body">
+                    <div class="receipt-avatar">
+                        <div class="receipt-avatar-circle" id="zelleAvatar"></div>
+                        <div class="receipt-badge"><span>Z</span></div>
+                    </div>
+                    <div class="receipt-amount">Send <span id="zelleReceiptAmount">$0.00</span></div>
+                    <div class="receipt-to-label">to</div>
+                    <div class="receipt-name" id="zelleReceiptName">Name</div>
+                    <div class="receipt-phone" id="zelleReceiptPhone">Phone</div>
+                    <div class="receipt-enrolled" id="zelleReceiptEnrolled">Enrolled as...</div>
+                    <div class="receipt-warning">
+                        Make sure you're sending to someone you trust...
+                        <strong>Once you've sent money, you can't cancel it.</strong>
+                    </div>
+                    <div class="receipt-actions">
+                        <button class="receipt-btn-cancel" onclick="closeZelleReceipt()">CANCEL</button>
+                        <button class="receipt-btn-send" onclick="confirmTransfer()">SEND</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="standardReviewModal" class="modal">
+            <div class="zelle-modal-content">
+                <div class="receipt-header">
+                    <button class="receipt-back-btn" onclick="closeStandardReview()">←</button>
+                    <span class="receipt-header-title" id="stdReviewTitle">Review Transaction</span>
+                </div>
+                <div class="receipt-body" style="padding-top: 10px;">
+                    <div class="std-receipt-icon-circle" id="stdReviewIcon">🏦</div>
+                    <div class="receipt-amount" id="stdReviewAmount">$0.00</div>
+                    <div style="font-size:14px; color:#666; margin-bottom:20px;">Total Amount</div>
+                    <div id="stdReviewDetails"></div>
+                    <div class="receipt-warning" style="margin-top:20px;">Please review your transfer details carefully before confirming.</div>
+                    <div class="receipt-actions">
+                        <button class="receipt-btn-cancel" onclick="closeStandardReview()">EDIT</button>
+                        <button class="receipt-btn-send" onclick="confirmTransfer()">CONFIRM</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="restrictionModal" class="modal">
+            <div class="modal-content">
+                <div class="restriction-icon">🚫</div>
+                <div class="restriction-title">Access Restricted</div>
+                <div class="restriction-text" id="restrictionText"></div>
+                <button class="btn-primary" onclick="closeModal('restrictionModal')">Close</button>
+            </div>
+        </div>
+
+        <div id="authModal" class="modal">
+            <div class="modal-content">
+                <h3 style="margin-bottom:10px;">Authentication Required</h3>
+                <p style="font-size:13px; color:#666; margin-bottom:15px;" id="authDesc">Please enter code to proceed.</p>
+                <div class="form-group">
+                    <input type="text" id="authCodeInput" placeholder="Enter Code" style="text-align:center; letter-spacing:2px; font-weight:bold;">
+                </div>
+                <button class="btn-primary" onclick="verifyAuth()">Verify</button>
+                <button class="btn-secondary" onclick="closeModal('authModal')">Cancel</button>
+            </div>
+        </div>
+
+        <div id="successModal" class="modal">
+            <div class="modal-content">
+                <div style="font-size:50px; color:#28a745; margin-bottom:10px;">✓</div>
+                <h3 style="margin-bottom:10px;">Transfer Successful</h3>
+                <p style="font-size:13px; color:#666; margin-bottom:20px;">Your transaction has been processed.</p>
+                <button class="btn-primary" onclick="window.location.href='app.html'">Done</button>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <button class="nav-item" onclick="window.location.href='app.html'">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10 M10 9h3a1.5 1.5 0 0 1 0 3H11a1.5 1.5 0 0 0 0 3h3"/></svg>
+                <span class="nav-item-label">Accounts</span>
+            </button>
+            <button class="nav-item active" onclick="window.location.href='transfer-page.html'">
+                <svg viewBox="0 0 24 24"><path d="M17 10H3l4-4 M7 14h14l-4 4"/></svg>
+                <span class="nav-item-label">Transfer</span>
+            </button>
+            <button class="nav-item" onclick="#">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 8h8v2l-8 4v2h8"/></svg>
+                <span class="nav-item-label">Zelle®</span>
+            </button>
+            <button class="nav-item" onclick="#">
+                <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M12 10v4M10 12h4"/></svg>
+                <span class="nav-item-label">Bill Pay</span>
+            </button>
+            <button class="nav-item" onclick="#">
+                <svg viewBox="0 0 24 24"><path d="M12 3v12M8 11l4 4 4-4M3 17v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"/></svg>
+                <span class="nav-item-label">Deposit Checks</span>
+            </button>
+            <button class="nav-item" onclick="#">
+                <svg viewBox="0 0 24 24"><path d="M3 18h18v-2 M3 14l6-6 4 4 8-8"/></svg>
+                <span class="nav-item-label">Invest</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="transfer-page.js"></script>
+</body>
+</html>

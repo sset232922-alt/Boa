@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Bank of America</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/min.css/min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+        
+        .mobile-container { max-width: 480px; margin: 0 auto; background: white; min-height: 100vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 30px rgba(0, 0, 0, 0.1); }
+
+        /* Header */
+        .header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #c41e3a; }
+        .header-title { font-size: 18px; font-weight: 700; }
+        .header-back { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+
+        /* Content */
+        .main-content { flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 100px; }
+
+        /* Profile Section */
+        .profile-section { background: white; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+        .profile-photo { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%); display: flex; align-items: center; justify-content: center; font-size: 48px; margin: 0 auto 16px; cursor: pointer; position: relative; overflow: hidden; color: white; }
+        .profile-name { font-size: 20px; font-weight: 700; color: #333; margin-bottom: 8px; }
+        .profile-email { font-size: 13px; color: #999; margin-bottom: 16px; }
+        .profile-edit-btn { background: #2a5298; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; transition: all 0.2s; }
+        .profile-edit-btn:hover { background: #1e3c72; }
+
+        /* Info Section */
+        .info-section { background: white; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+        .section-title { font-size: 16px; font-weight: 700; color: #333; margin-bottom: 14px; }
+        .form-group { margin-bottom: 14px; }
+        label { display: block; font-size: 12px; color: #999; margin-bottom: 6px; font-weight: 600; }
+        input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; background: #f9f9f9; }
+        input:disabled { background: #f0f0f0; color: #999; }
+
+        /* Buttons */
+        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+        .btn-primary { padding: 12px; border: none; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; background: linear-gradient(135deg, #c41e3a 0%, #a01830 100%); color: white; }
+        .btn-secondary { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; background: white; color: #333; }
+        .btn-danger { width: 100%; padding: 10px; background: #c41e3a; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; }
+
+        /* Danger Zone */
+        .danger-section { background: #fff5f5; border: 1px solid #ffcccc; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+        .danger-title { font-size: 14px; font-weight: 700; color: #c41e3a; margin-bottom: 12px; }
+        .danger-description { font-size: 12px; color: #666; margin-bottom: 12px; }
+
+        /* Messages */
+        .success-message, .error-message { padding: 12px; border-radius: 6px; margin-bottom: 16px; font-size: 13px; display: none; }
+        .success-message { background: #e8f5e9; color: #2e7d32; border: 1px solid #81c784; }
+        .error-message { background: #ffebee; color: #c41e3a; border: 1px solid #f44336; }
+        .show { display: block; }
+
+        /* --- BOTTOM NAV (SVG ICONS) --- */
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); 
+            width: 100%; max-width: 480px; height: 75px; 
+            background: white; border-top: 1px solid #e8e8e8; 
+            display: flex; justify-content: space-around; 
+            align-items: center; z-index: 20; padding: 0 10px;
+        }
+        .nav-item { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            gap: 5px; flex: 1; height: 100%; cursor: pointer; 
+            background: none; border: none; text-decoration: none; 
+            color: #555;
+        }
+        .nav-item svg { width: 24px; height: 24px; fill: none; stroke: #555; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.2s; }
+        .nav-item-label { font-size: 10px; color: inherit; font-weight: 500; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .nav-item.active { color: #0052c2; }
+        .nav-item.active svg { stroke: #0052c2; stroke-width: 2; }
+
+        @media (max-width: 480px) { .mobile-container { box-shadow: none; max-width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <div class="header">
+            <button class="header-back" onclick="window.location.href='app.html'">←</button>
+            <div class="header-title">Profile</div>
+            <div style="width: 24px;"></div>
+        </div>
+
+        <div class="main-content">
+            <div id="successMsg" class="success-message"></div>
+            <div id="errorMsg" class="error-message"></div>
+
+            <div class="profile-section">
+                <div class="profile-photo" onclick="changePhoto()"><span id="profileInitial">U</span></div>
+                <div class="profile-name" id="profileName">Loading...</div>
+                <div class="profile-email" id="profileEmail">loading...</div>
+                <button class="profile-edit-btn" onclick="toggleEditMode()">Edit Profile</button>
+            </div>
+
+            <div class="info-section">
+                <div class="section-title">Personal Information</div>
+                <div class="form-group"><label>First Name</label><input type="text" id="firstName" disabled></div>
+                <div class="form-group"><label>Last Name</label><input type="text" id="lastName" disabled></div>
+                <div class="form-group"><label>Email</label><input type="email" id="email" disabled></div>
+                <div class="form-group"><label>Phone</label><input type="tel" id="phone" disabled></div>
+                <div class="action-buttons" id="editButtons" style="display: none;">
+                    <button class="btn-secondary" onclick="cancelEdit()">Cancel</button>
+                    <button class="btn-primary" onclick="saveProfile()">Save Changes</button>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="section-title">Security</div>
+                <button class="btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="openChangePassword()">Change Password</button>
+                <button class="btn-secondary" style="width: 100%;" onclick="openCardSettings()">Card Settings</button>
+            </div>
+
+            <div class="danger-section">
+                <div class="danger-title">Danger Zone</div>
+                <div class="danger-description">These actions cannot be undone. Please be careful.</div>
+                <button class="btn-danger" onclick="freezeAccount()">Freeze Account</button>
+                <button class="btn-danger" style="background: #666; margin-top: 8px;" onclick="deleteAccount()">Delete Account</button>
+            </div>
+
+            <button style="width: 100%; padding: 12px; background: #2a5298; color: white; border: none; border-radius: 8px; font-weight: 600; margin-bottom: 20px; cursor: pointer;" onclick="logoutUser()">Logout</button>
+        </div>
+
+        <div class="bottom-nav">
+            <button class="nav-item" onclick="window.location.href='app.html'">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10 M10 9h3a1.5 1.5 0 0 1 0 3H11a1.5 1.5 0 0 0 0 3h3"/></svg>
+                <span class="nav-item-label">Accounts</span>
+            </button>
+            <button class="nav-item" onclick="window.location.href='transfer-page.html'">
+                <svg viewBox="0 0 24 24"><path d="M17 10H3l4-4 M7 14h14l-4 4"/></svg>
+                <span class="nav-item-label">Transfer</span>
+            </button>
+            <button class="nav-item" onclick="#">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 8h8v2l-8 4v2h8"/></svg>
+                <span class="nav-item-label">Zelle®</span>
+            </button>
+            <button class="nav-item" onclick="#">
+                <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M12 10v4M10 12h4"/></svg>
+                <span class="nav-item-label">Bill Pay</span>
+            </button>
+            <button class="nav-item" onclick="#">
+                <svg viewBox="0 0 24 24"><path d="M12 3v12M8 11l4 4 4-4M3 17v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"/></svg>
+                <span class="nav-item-label">Deposit Checks</span>
+            </button>
+            <button class="nav-item active" onclick="#">
+                <svg viewBox="0 0 24 24"><path d="M3 18h18v-2 M3 14l6-6 4 4 8-8"/></svg>
+                <span class="nav-item-label">Invest</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="passwordModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 12px; padding: 24px; max-width: 400px; width: 90%;">
+            <h2 style="margin-bottom: 20px; font-size: 18px;">Change Password</h2>
+            <div class="form-group"><label>Current Password</label><input type="password" id="currentPassword"></div>
+            <div class="form-group"><label>New Password</label><input type="password" id="newPassword"></div>
+            <div class="form-group"><label>Confirm New Password</label><input type="password" id="confirmPassword"></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button class="btn-secondary" onclick="closePasswordModal()" style="width: 100%;">Cancel</button>
+                <button class="btn-primary" onclick="updatePassword()" style="width: 100%;">Update</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let isEditMode = false;
+
+        window.addEventListener('load', loadProfile);
+
+        async function loadProfile() {
+            const userId = localStorage.getItem('userId');
+            const token = localStorage.getItem('authToken');
+            try {
+                const response = await fetch(`/api/user/${userId}`, { headers: { 'Authorization': token } });
+                currentUser = await response.json();
+
+                document.getElementById('profileName').textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+                document.getElementById('profileEmail').textContent = currentUser.email;
+                document.getElementById('profileInitial').textContent = currentUser.firstName.charAt(0).toUpperCase();
+
+                document.getElementById('firstName').value = currentUser.firstName;
+                document.getElementById('lastName').value = currentUser.lastName;
+                document.getElementById('email').value = currentUser.email;
+                document.getElementById('phone').value = currentUser.phone;
+            } catch (error) { console.error('Error loading profile:', error); }
+        }
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            ['firstName', 'lastName', 'email', 'phone'].forEach(id => document.getElementById(id).disabled = !isEditMode);
+            document.getElementById('editButtons').style.display = isEditMode ? 'grid' : 'none';
+        }
+
+        function cancelEdit() { loadProfile(); toggleEditMode(); }
+
+        async function saveProfile() {
+            const userId = localStorage.getItem('userId');
+            const updates = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                phone: document.getElementById('phone').value
+            };
+            try {
+                const response = await fetch(`/api/user/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('authToken') },
+                    body: JSON.stringify(updates)
+                });
+                if (response.ok) { showSuccess('Profile updated'); loadProfile(); toggleEditMode(); }
+                else showError('Failed to update');
+            } catch (e) { showError('Error updating profile'); }
+        }
+
+        function openChangePassword() { document.getElementById('passwordModal').style.display = 'flex'; }
+        function closePasswordModal() { document.getElementById('passwordModal').style.display = 'none'; }
+
+        async function updatePassword() {
+            const current = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            if (newPass.length < 8) return showError('Password must be 8+ chars');
+            
+            try {
+                const response = await fetch('/api/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': localStorage.getItem('authToken') },
+                    body: JSON.stringify({ userId: localStorage.getItem('userId'), currentPassword: current, newPassword: newPass })
+                });
+                if (response.ok) { showSuccess('Password changed'); closePasswordModal(); }
+                else showError('Failed to change password');
+            } catch (e) { showError('Error changing password'); }
+        }
+
+        function logoutUser() {
+            if (confirm('Logout?')) {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userId');
+                window.location.href = 'login.html';
+            }
+        }
+
+        function showSuccess(msg) { const m = document.getElementById('successMsg'); m.textContent = msg; m.classList.add('show'); setTimeout(() => m.classList.remove('show'), 3000); }
+        function showError(msg) { const m = document.getElementById('errorMsg'); m.textContent = msg; m.classList.add('show'); setTimeout(() => m.classList.remove('show'), 3000); }
+        function changePhoto() { alert('Photo upload coming soon'); }
+        function openCardSettings() { alert('Settings coming soon'); }
+        function freezeAccount() { alert('Feature coming soon'); }
+        function deleteAccount() { alert('Feature coming soon'); }
+    </script>
+</body>
+</html>
