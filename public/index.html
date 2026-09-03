@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bank of America Mobile</title>
+    <style>
+        /* --- RESET & VARIABLES --- */
+        :root {
+            --bofa-blue: #002964; 
+            --bofa-red: #E31837;
+            --gray-bg: #f3f4f6; 
+            --text-gray: #333333;
+            --legal-gray: #1a1a1a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #fff;
+            width: 100%;
+            overflow-x: hidden;
+            /* Header is relative so no padding-top needed */
+        }
+
+        /* --- HEADER CONTAINER --- */
+        .header-wrapper {
+            width: 100%;
+            position: relative; /* Scrolls with the page */
+            background-color: #fff;
+            border-bottom: 1px solid #dcdcdc;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        /* --- TOP BANNER (FDIC) --- */
+        .top-banner {
+            background-color: var(--gray-bg);
+            padding: 14px 10px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .banner-title {
+            color: #595959;
+            font-style: italic;
+            font-size: 13px;
+            margin-bottom: 5px;
+            font-family: "Times New Roman", Times, serif; 
+            line-height: 1.2;
+        }
+
+        .banner-content-row {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 6px;
+            max-width: 100%;
+        }
+
+        /* Exact Bold FDIC Logo SVG */
+        .fdic-logo-svg {
+            height: 14px;
+            width: auto;
+            fill: var(--bofa-blue);
+            display: block;
+            margin-top: 1px; 
+            flex-shrink: 0;
+        }
+
+        .banner-legal-text {
+            font-size: 10.5px;
+            color: var(--legal-gray);
+            font-style: italic;
+            line-height: 1.3;
+            text-align: left;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            white-space: normal;
+        }
+
+        /* --- MAIN NAVIGATION --- */
+        .main-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 62px;
+            padding: 0 16px;
+            background-color: #ffffff;
+        }
+
+        /* HAMBURGER MENU */
+        .menu-btn {
+            background: none;
+            border: none;
+            padding: 5px 5px 5px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .hamburger-icon {
+            width: 24px;
+            height: 24px;
+            fill: #606060;
+        }
+
+        /* LOGO AREA */
+        .logo-wrapper {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            padding-left: 8px;
+        }
+
+        .bofa-text {
+            color: var(--bofa-blue);
+            font-family: 'Arial', sans-serif;
+            font-weight: 900;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-right: 6px;
+            white-space: nowrap;
+            transform: scaleY(0.95);
+        }
+
+        .bofa-flag-img {
+            height: 22px;
+            width: auto;
+            display: block;
+        }
+
+        /* RIGHT ACTIONS */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* LOG IN BUTTON */
+        .login-btn {
+            text-decoration: none;
+            color: var(--bofa-blue);
+            font-weight: 600;
+            font-size: 15px;
+            border: 1.5px solid var(--bofa-blue);
+            padding: 6px 18px;
+            border-radius: 50px;
+            white-space: nowrap;
+        }
+
+        /* SEARCH ICON */
+        .search-btn {
+            background: none;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-icon {
+            width: 26px;
+            height: 26px;
+            fill: #595959;
+        }
+
+        /* --- CONTENT SECTION --- */
+        .content-section {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Generic class for stacked images to ensure no gaps */
+        .stacked-img {
+            width: 100%;
+            height: auto;
+            display: block; /* Prevents tiny whitespace gap below images */
+            margin: 0;
+            padding: 0;
+        }
+
+        /* --- RESPONSIVE ADJUSTMENTS --- */
+        @media (max-width: 380px) {
+            .bofa-text {
+                font-size: 11px;
+                letter-spacing: 0;
+            }
+            .bofa-flag-img {
+                height: 18px;
+            }
+            .login-btn {
+                padding: 5px 14px;
+                font-size: 14px;
+            }
+            .nav-actions {
+                gap: 8px;
+            }
+            .main-nav {
+                padding: 0 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-wrapper">
+        <div class="top-banner">
+            <div class="banner-title">Bank of America deposit products:</div>
+            
+            <div class="banner-content-row">
+                <svg class="fdic-logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 16">
+                    <path d="M0 0h12v3.5H4v3h7v3.2H4V16H0V0z"/>
+                    <path d="M14 0h6c5.5 0 8.5 3 8.5 8s-3 8-8.5 8H14V0zm4 3.5v9h2.5c2.5 0 4-1.5 4-4.5s-1.5-4.5-4-4.5H18z"/>
+                    <path d="M31 0h4v16h-4V0z"/>
+                    <path d="M49.5 0h-2c-5 0-7.5 3.5-7.5 8s2.5 8 7.5 8h2v-3.5h-1.5c-2.5 0-4-1.5-4-4.5s1.5-4.5 4-4.5h1.5V0z"/>
+                </svg>
+
+                <div class="banner-legal-text">FDIC-Insured - Backed by the full faith and credit of the U.S. Government</div>
+            </div>
+        </div>
+
+        <nav class="main-nav">
+            <button class="menu-btn" aria-label="Menu">
+                <svg class="hamburger-icon" viewBox="0 0 24 24">
+                    <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/>
+                </svg>
+            </button>
+
+            <a href="#" class="logo-wrapper">
+                <span class="bofa-text">BANK OF AMERICA</span>
+                <img src="https://i.ibb.co/dJpRtmtW/IMG-4194.jpg" alt="Bank of America Logo" class="bofa-flag-img">
+            </a>
+
+            <div class="nav-actions">
+                <a href="login.html" class="login-btn">Log in</a>
+                
+                <button class="search-btn" aria-label="Search">
+                    <svg class="search-icon" viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="content-section">
+        <img src="https://i.ibb.co/Zz4SgwvX/IMG-4196.jpg" alt="Promo Banner 1" class="stacked-img">
+        <img src="https://i.ibb.co/xKJLhS5N/IMG-4197.jpg" alt="Promo Banner 2" class="stacked-img">
+        <img src="https://i.ibb.co/6zt6mPZ/IMG-4198.jpg" alt="Promo Banner 3" class="stacked-img">
+        <img src="https://i.ibb.co/RTB90ZKv/IMG-4199.jpg" alt="Promo Banner 4" class="stacked-img">
+        <img src="https://i.ibb.co/8L5gKhKd/IMG-4200.jpg" alt="Promo Banner 5" class="stacked-img">
+        <img src="https://i.ibb.co/mFgHQgKk/IMG-4201.jpg" alt="Promo Banner 6" class="stacked-img">
+        <img src="https://i.ibb.co/KRjBzD9/IMG-4202.jpg" alt="Promo Banner 7" class="stacked-img">
+        <img src="https://i.ibb.co/tpxvQytj/IMG-4203.jpg" alt="Promo Banner 8" class="stacked-img">
+        <img src="https://i.ibb.co/FkXqVLSf/IMG-4204.jpg" alt="Promo Banner 9" class="stacked-img">
+        <img src="https://i.ibb.co/SwspKy85/IMG-4205.jpg" alt="Promo Banner 10" class="stacked-img">
+        <img src="https://i.ibb.co/TDX0wTJH/IMG-4206.jpg" alt="Promo Banner 11" class="stacked-img">
+        <img src="https://i.ibb.co/ym6yz2fR/IMG-4207.jpg" alt="Promo Banner 12" class="stacked-img">
+    </main>
+
+    <script>
+        // Interaction Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const btns = document.querySelectorAll('.menu-btn, .search-btn, .login-btn');
+            
+            // Add touch feedback
+            btns.forEach(btn => {
+                btn.addEventListener('touchstart', function() {
+                    this.style.opacity = '0.5';
+                });
+                btn.addEventListener('touchend', function() {
+                    setTimeout(() => { this.style.opacity = '1'; }, 200);
+                });
+            });
+            console.log('Mobile interface loaded.');
+        });
+    </script>
+    <!-- Begin of Chaport Live Chat code --> <script type="text/javascript"> (function(w,d,v3){ w.chaportConfig = { appId : '6888c4acf70e201da98c5aa5', };  if(w.chaport)return;v3=w.chaport={};v3._q=[];v3._l={};v3.q=function(){v3._q.push(arguments)};v3.on=function(e,fn){if(!v3._l[e])v3._l[e]=[];v3._l[e].push(fn)};var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://app.chaport.com/javascripts/insert.js';var ss=d.getElementsByTagName('script')[0];ss.parentNode.insertBefore(s,ss)})(window, document); </script> <!-- End of Chaport Live Chat code -->
+</body>
+</html>

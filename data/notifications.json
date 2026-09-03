@@ -1,0 +1,83 @@
+[
+  {
+    "notificationId": "NOT1763240852836EIXWWF3HD",
+    "userId": "USR1763240787862",
+    "title": "Account Funded",
+    "message": "Your account has been funded with $50000.00 by admin",
+    "type": "credit",
+    "isRead": true,
+    "timestamp": "2025-11-15T21:07:32.836Z"
+  },
+  {
+    "notificationId": "NOT1763240947616V1RZFQO1C",
+    "userId": "USR1763240787862",
+    "title": "Money Sent",
+    "message": "You sent $3000.00 to recipient",
+    "type": "debit",
+    "isRead": true,
+    "timestamp": "2025-11-15T21:09:07.616Z"
+  },
+  {
+    "notificationId": "NOT1763295934898ANMJPOIDY",
+    "userId": "USR1763240760027",
+    "title": "Account Funded",
+    "message": "Your account has been funded with $58000.00 by admin",
+    "type": "credit",
+    "isRead": true,
+    "timestamp": "2025-11-16T12:25:34.899Z"
+  },
+  {
+    "notificationId": "NOT1763295992548G0HLOU1O7",
+    "userId": "USR1763240760027",
+    "title": "Money Sent",
+    "message": "You sent $2000.00 to recipient",
+    "type": "debit",
+    "isRead": false,
+    "timestamp": "2025-11-16T12:26:32.548Z"
+  },
+  {
+    "notificationId": "NOT17632961067985ZREHSMR7",
+    "userId": "USR1763240760027",
+    "title": "Money Sent",
+    "message": "You sent $5000.00 to recipient",
+    "type": "debit",
+    "isRead": false,
+    "timestamp": "2025-11-16T12:28:26.798Z"
+  },
+  {
+    "notificationId": "NOT1763320425568B2C782IOA",
+    "userId": "USR1763240787862",
+    "title": "Account Funded",
+    "message": "Your account has been funded with $200000.00 by admin",
+    "type": "credit",
+    "isRead": true,
+    "timestamp": "2025-11-16T19:13:45.568Z"
+  },
+  {
+    "notificationId": "NOT176332049896947FQU1G78",
+    "userId": "USR1763240787862",
+    "title": "Money Sent",
+    "message": "You sent $5000.00 to recipient",
+    "type": "debit",
+    "isRead": true,
+    "timestamp": "2025-11-16T19:14:58.969Z"
+  },
+  {
+    "notificationId": "NOT17633760036041M3KRGE2E",
+    "userId": "USR1763240787862",
+    "title": "Money Sent",
+    "message": "You sent $5000.00 to Savings Account",
+    "type": "debit",
+    "isRead": false,
+    "timestamp": "2025-11-17T10:40:03.604Z"
+  },
+  {
+    "notificationId": "NOT1763376003609OXVN9TEN3",
+    "userId": "USR1763240787862",
+    "title": "Money Received",
+    "message": "You received $5000.00 from Lex Sion",
+    "type": "credit",
+    "isRead": false,
+    "timestamp": "2025-11-17T10:40:03.609Z"
+  }
+]
